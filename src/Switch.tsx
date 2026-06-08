@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useState, JSX } from 'react';
 import { Switch as RNSwitch, ViewStyle } from 'react-native';
 import { useColors } from './theme';
-
+import { registerInterop } from './helpers/interop';
 interface SwitchProps {
     value?: boolean;
     onValueChange?: (value: boolean) => void;
@@ -73,4 +73,7 @@ const Switch: React.FC<SwitchProps> = ({
     );
 };
 
-export default Switch;
+const WrappedSwitch = registerInterop(Switch, {
+    className: 'style',
+});
+export default WrappedSwitch;

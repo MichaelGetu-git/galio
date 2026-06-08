@@ -3,6 +3,7 @@ import type { JSX } from 'react';
 import Typography from './Text';
 import { useColors } from './theme';
 import { TextStyle, Pressable, ViewStyle, Platform } from 'react-native';
+import { registerInterop } from './helpers/interop';
 
 export interface LinkProps {
     children?: React.ReactNode;
@@ -83,4 +84,7 @@ const Link = forwardRef<linkRef, LinkProps>(({
     );
 });
 
-export default Link;
+const WrappedLink = registerInterop(Link, {
+    className: 'style',
+});
+export default WrappedLink;

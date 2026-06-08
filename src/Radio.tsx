@@ -2,6 +2,7 @@ import { JSX, useCallback, useEffect, useMemo, useState } from "react";
 import { Pressable, StyleSheet, TextStyle, View, ViewStyle } from "react-native";
 import { useTheme, useColors } from "./theme";
 import Text from "./Text";
+import { registerInterop } from "./helpers/interop";
 
 interface RadioProps {
     color?: keyof ReturnType<typeof useColors> | string;
@@ -202,4 +203,8 @@ const styles = (theme: ReturnType<typeof useTheme>, colors: ReturnType<typeof us
         },
     });
 
-export default Radio;
+const WrappedRadio = registerInterop(Radio, {
+    className:'style',
+    labelClassName:'labelStyle',
+})
+export default WrappedRadio;

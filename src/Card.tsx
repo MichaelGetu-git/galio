@@ -4,6 +4,7 @@ import Block from "./Block";
 import { useTheme, useColors } from "./theme";
 import Icon from "./Icon";
 import Text from "./Text";
+import {registerInterop} from './helpers/interop';
 
 interface ImageProps {
     image?: string;
@@ -357,4 +358,10 @@ const styles = (theme: ReturnType<typeof useTheme>, colors: ReturnType<typeof us
   });
 };
 
-export default Card;
+const WrappedCard=registerInterop(Card,{
+    className:'style',
+    imageClassName:'imageStyle',
+    footerClassName:'footerStyle',
+    avatarClassName:'avatarStyle',
+})
+export default WrappedCard;

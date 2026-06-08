@@ -5,7 +5,7 @@ import { useCallback, useState } from "react";
 import type { JSX } from "react";
 import { ActivityIndicator, Dimensions, Platform, Pressable, StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native";
 import Icon from "./Icon";
-
+import { registerInterop } from './helpers/interop';
 const { width } = Dimensions.get('window');
 
 export interface ButtonProps {
@@ -267,5 +267,8 @@ const styles = (theme: ReturnType<typeof useTheme>) => {
         },
     });
 };
-
-export default Button;
+const WrappedButton = registerInterop(Button, {
+  className: 'style',
+  textClassName: 'textStyle',
+});
+export default WrappedButton;

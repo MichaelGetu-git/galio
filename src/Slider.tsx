@@ -8,6 +8,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import { useTheme, useColors } from './theme';
+import {registerInterop} from './helpers/interop';
 
 interface SliderProps {
   value?: number;
@@ -176,4 +177,7 @@ const styles = (theme: ReturnType<typeof useTheme>, colors: ReturnType<typeof us
     },
   });
 
-export default Slider;
+const WrappedSlider=registerInterop(Slider,{
+  className: 'style',
+})
+export default WrappedSlider;

@@ -1,6 +1,7 @@
 import { JSX } from "react";
 import { StyleSheet, ViewStyle, View, Text, Image, ImageSourcePropType, Platform, ImageStyle, TextStyle } from "react-native";
 import { useTheme, useColors } from "./theme";
+import { registerInterop } from './helpers/interop';    
 
 interface AvatarProps {
     /**
@@ -168,5 +169,8 @@ function Avatar({
         </View>
     );
 }
-
-export default Avatar;
+const WrappedAvatar=registerInterop(Avatar,{
+    className: 'style',
+    imageClassName: 'imageStyle',
+})
+export default WrappedAvatar;

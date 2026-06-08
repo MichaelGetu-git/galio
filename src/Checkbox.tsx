@@ -3,7 +3,7 @@ import { Image, ImageStyle, Pressable, StyleSheet, TextStyle, View, ViewStyle } 
 import { useTheme, useColors } from "./theme";
 import Text from "./Text";
 import Icon from "./Icon";
-
+import {registerInterop} from './helpers/interop';
 interface SpaceAroundProps {
     direction: 'row-reverse' | 'column' | 'column-reverse' | 'row';
 }
@@ -297,4 +297,9 @@ const styles = (theme: ReturnType<typeof useTheme>) => {
   });
 };
 
-export default Checkbox;
+const WrappedCheckbox=registerInterop(Checkbox,{
+    className:'style',
+    labelClassName:'labelStyle',
+    iconClassName:'iconStyle',
+})
+export default WrappedCheckbox;

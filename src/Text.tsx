@@ -3,7 +3,7 @@ import type { JSX } from 'react';
 import { Platform, StyleProp, StyleSheet, Text, TextStyle, ViewStyle } from 'react-native';
 import { normalize } from './helpers/normalize';
 import GalioTheme, { useTheme, useColors } from './theme';
-
+import { registerInterop } from './helpers/interop';
 interface TypographyProps {
     style?: StyleProp<TextStyle>;
     h1?: boolean;
@@ -108,4 +108,8 @@ const styles = (colors: ReturnType<typeof useColors> | undefined) => StyleSheet.
         color: colors?.text || '#000',
     }
 });
-export default memo(Typography);
+const MemoizedText=memo(Typography)
+const WrappedTypography = registerInterop(MemoizedText, {
+    className: 'style',
+})
+export default WrappedTypography;

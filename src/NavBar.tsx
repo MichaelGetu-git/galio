@@ -14,6 +14,7 @@ import { useTheme, useColors } from "./theme";
 import Text from "./Text";
 import Icon from "./Icon";
 import Block from "./Block";
+import { registerInterop } from "./helpers/interop";
 
 const { height } = Dimensions.get("screen");
 
@@ -230,4 +231,10 @@ const styles = (theme: ReturnType<typeof useTheme>, colors: ReturnType<typeof us
     },
   });
 
-export default NavBar;
+const WrappedNavBar=registerInterop(NavBar, {
+  className: 'style',
+  titleClassName:'titleStyle',
+  leftClassName:'leftStyle',
+  rightClassName:'rightStyle',
+})  
+export default WrappedNavBar;

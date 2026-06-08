@@ -2,7 +2,7 @@ import React,{forwardRef, useImperativeHandle, useRef, useState, useEffect} from
 import { View, Text, TextInput, StyleSheet, Pressable, KeyboardTypeOptions, ViewStyle, TextStyle, Platform } from 'react-native';
 import Icon from './Icon';
 import  { useTheme, useColors } from './theme';
-
+import { registerInterop } from './helpers/interop';
 export interface InputProps {
   style?: ViewStyle;
   textInputStyle?: TextStyle;
@@ -308,4 +308,10 @@ const styles = (theme: ReturnType<typeof useTheme>, colors: ReturnType<typeof us
   });
 };
 
-  export default Input;
+const WrappedInput=registerInterop(Input, {
+  className:'style',
+  inputClassName:'textInputStyle',
+  labelClassName:'labelStyles',
+  helpClassName:'helpStyles',
+})
+  export default WrappedInput;

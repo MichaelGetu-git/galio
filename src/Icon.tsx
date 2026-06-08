@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import type { JSX } from 'react';
 import { Fontisto } from '@react-native-vector-icons/fontisto';
 import { createIconSetFromIcoMoon } from '@expo/vector-icons';
+import { registerInterop } from './helpers/interop';
 
 import galioConfig from './config/galio.json';
 import getIconType from './helpers/getIconType';
@@ -67,5 +68,9 @@ function Icon({
         <IconInstance name={name} size={iconSize} color={iconColor} style={style} {...rest} />
     ) : null;
 }
+const MemoizedIcon = memo(Icon);
 
-export default memo(Icon);
+const WrappedIcon=registerInterop(MemoizedIcon,{
+    className: 'style',
+})
+export default WrappedIcon;
