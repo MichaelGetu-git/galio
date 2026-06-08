@@ -52,12 +52,20 @@
     "react": "^19.2.0",
     "react-native": "^0.82.0",
     "react-native-safe-area-context": "^5.6.1",
-    "typescript": "~5.9.3"
+    "typescript": "~5.9.3",
+    "nativewind": "^4.0.1",
+    "tailwindcss": "^3.4.0"
   },
   "peerDependencies": {
     "react": ">=16.8.0",
     "react-native": ">=0.59.0",
-    "react-native-safe-area-context": ">=4.0.0"
+    "react-native-safe-area-context": ">=4.0.0",
+    "nativewind": ">=4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "nativewind": {
+      "optional": true
+    }
   },
   "collective": {
     "type": "opencollective",
