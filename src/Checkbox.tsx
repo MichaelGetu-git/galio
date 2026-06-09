@@ -146,6 +146,11 @@ interface CheckboxProps {
     style?: ViewStyle;
     accessibilityLabel?: string;
     accessibilityHint?: string;
+
+    className?:string;
+    labelClassName?:string;
+    checkboxClassName?:string,
+    imageClassName?:string
 }
 
 function Checkbox({
@@ -169,6 +174,10 @@ function Checkbox({
     style,
     accessibilityLabel,
     accessibilityHint,
+    className,
+    labelClassName,
+    checkboxClassName,
+    imageClassName
 }: CheckboxProps): JSX.Element {
     const theme = useTheme();
     const colors = useColors();

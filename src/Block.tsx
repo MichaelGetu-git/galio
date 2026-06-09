@@ -91,6 +91,8 @@ interface BlockProps {
    */
   style?: ViewStyle | ViewStyle[];
 
+  className?: string;
+
 }
 
 // Extract specific props that aren't part of React Native's ViewStyle
@@ -118,6 +120,7 @@ function Block(props: BlockProps): JSX.Element {
     background,
     children,
     style,
+
     ...rest
   } = props;
 
@@ -197,6 +200,7 @@ function useBlockStyles({
   card,
   background,
   customStyle,
+  
 }: {
   theme: ReturnType<typeof useTheme>;
   colors: ReturnType<typeof useColors>;

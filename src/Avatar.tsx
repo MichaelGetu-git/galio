@@ -69,6 +69,14 @@ interface AvatarProps {
      * Accessibility hint for screen readers
      */
     accessibilityHint?: string;
+
+
+    className?:string;
+    imageClassName?:string;
+    containerClassName?:string;
+    labelClassName?:string;
+    labelTextClassName?:string;
+
 }
 
 
@@ -89,6 +97,11 @@ function Avatar({
     accessibilityLabel,
     accessibilityHint,
     shadow,
+    className,
+    imageClassName,
+    containerClassName,
+    labelClassName,
+    labelTextClassName
 }: AvatarProps): JSX.Element {
     const theme = useTheme();
     const colors = theme.colors;

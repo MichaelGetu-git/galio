@@ -44,6 +44,9 @@ export interface ButtonProps {
     testID?: string;
     accessibilityLabel?: string;
     rippleColor?: string;
+
+    className?: string;
+    textClassName?:string;
 }
 
 function Button({
@@ -72,6 +75,8 @@ function Button({
     testID = undefined,
     accessibilityLabel = undefined,
     rippleColor = undefined,
+    className = '',
+    textClassName = '',
 }: ButtonProps): JSX.Element {
     const theme = useTheme();
     const colors = useColors();

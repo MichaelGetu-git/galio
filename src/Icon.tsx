@@ -17,6 +17,8 @@ export interface IconProps {
     color?: string; // can be a color string or a theme color key
     style?: any;
     [key: string]: any;
+
+    className?:string;
 }
 
 function Icon({
@@ -25,6 +27,7 @@ function Icon({
     size,
     color,
     style,
+    className,
     ...rest
 }: IconProps): JSX.Element | null {
     const theme = useTheme();

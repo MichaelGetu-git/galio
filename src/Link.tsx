@@ -13,6 +13,9 @@ export interface LinkProps {
     color?: string;
     disabled?: boolean;
     activeOpacity?: number;
+
+    className?: string;
+    textClassName?:string;
 }
 
 export interface linkRef {
@@ -27,6 +30,8 @@ const Link = forwardRef<linkRef, LinkProps>(({
     color,
     disabled = false,
     activeOpacity = 0.7,
+    className,
+    textClassName,
     ...rest
 }, ref): JSX.Element => {
     const colors = useColors();

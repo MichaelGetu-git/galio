@@ -181,6 +181,11 @@ interface CardProps {
     rightSideComponent?: React.ReactNode;
     flex?: boolean;
     shadowColor?: string;
+
+    className?: string;
+    imageClassName?:string;
+    footerClassName?:string;
+    imageBlockClassName?:string;
 }
 
 function Card({
@@ -209,6 +214,10 @@ function Card({
     rightSideComponent,
     flex = false,
     shadowColor,
+    className,
+    imageClassName,
+    footerClassName,
+    imageBlockClassName
 }: CardProps): JSX.Element {
     const theme = useTheme();
     const colors = useColors();

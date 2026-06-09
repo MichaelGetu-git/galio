@@ -61,6 +61,11 @@ export interface InputProps {
   keyboardType?: KeyboardTypeOptions;
   textContentType?: any;
   autoComplete?: any;
+
+  className?:string,
+  inputClassName?:string,
+  labelClassName?:string,
+  helpClassName?:string,
 }
 
 export interface InputRef {
@@ -96,6 +101,10 @@ const Input = forwardRef<InputRef, InputProps>(({
   iconContent,
   password = false,
   error,
+  className,
+  inputClassName,
+  labelClassName,
+  helpClassName,
   onRef,
   ...rest
 }, ref)=> {

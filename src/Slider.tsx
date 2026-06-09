@@ -23,6 +23,11 @@ interface SliderProps {
   onValueChange?: (value: number) => void;
   accessibilityLabel?: string;
   accessibilityHint?: string;
+
+  className?:string;
+  containerClassName?:string;
+  trackClassName?:string;
+  thumbClassName?:string;
 }
 
 const Slider: React.FC<SliderProps> = ({
@@ -38,6 +43,10 @@ const Slider: React.FC<SliderProps> = ({
   thumbStyle,
   accessibilityLabel,
   accessibilityHint,
+  className,
+  containerClassName,
+  trackClassName,
+  thumbClassName
 }) => {
   const theme = useTheme();
   const colors = useColors();

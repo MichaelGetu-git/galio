@@ -20,6 +20,10 @@ interface RadioProps {
     accessibilityLabel?: string;
     accessibilityHint?: string;
     size?: number | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+
+    className?:string;
+    labelClassName?:string;
+    containerClassName?:string;
 }
 
 function Radio({
@@ -38,6 +42,9 @@ function Radio({
     accessibilityLabel,
     accessibilityHint,
     size = 'md',
+    className,
+    labelClassName,
+    containerClassName
 }: RadioProps): JSX.Element {
     const theme = useTheme();
     const colors = useColors();

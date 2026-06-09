@@ -13,6 +13,9 @@ interface SwitchProps {
     containerStyle?: ViewStyle;
     accessibilityLabel?: string;
     accessibilityHint?: string;
+
+    className?:string;
+    containerClassName?:string;
 }
 
 const Switch: React.FC<SwitchProps> = ({
@@ -25,6 +28,8 @@ const Switch: React.FC<SwitchProps> = ({
     containerStyle,
     accessibilityLabel,
     accessibilityHint,
+    className,
+    containerClassName
 }) => {
     const colors = useColors();
     const [internalValue, setInternalValue] = useState(value ?? false);

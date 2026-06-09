@@ -39,6 +39,11 @@ interface NavBarProps {
   titleNumberOfLines?: number;
   titleTextProps?: TextProps;
   accessibilityLabel?: string;
+
+  className?:string;
+  titleClassName?:string;
+  leftClassName?:string;
+  rightClassName?:string;
 }
 
 function NavBar({
@@ -62,6 +67,10 @@ function NavBar({
   titleNumberOfLines,
   titleTextProps,
   accessibilityLabel,
+  className,
+  titleClassName,
+  leftClassName,
+  rightClassName
 }: NavBarProps): JSX.Element {
   const theme = useTheme();
   const colors = useColors();

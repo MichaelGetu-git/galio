@@ -26,6 +26,8 @@ interface TypographyProps {
     theme?: any;
     shadow?: boolean;
     [key: string]: any;
+
+    className?:string;
 }
 
 function Typography({
@@ -49,6 +51,7 @@ function Typography({
     children,
     theme: propTheme,
     shadow = false,
+    className,
     ...rest
 }: TypographyProps): JSX.Element {
     const theme = useTheme?.() || propTheme || GalioTheme;
