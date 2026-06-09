@@ -40,5 +40,6 @@ export interface ButtonProps {
     rippleColor?: string;
 }
 declare function Button({ color, children, disabled, icon, iconPosition, iconFamily, iconSize, iconColor, loading, loadingSize, loadingColor, onlyIcon, opacity, round, size, fullWidth, block, shadow, style, textStyle, textTransform, onPress, testID, accessibilityLabel, rippleColor, }: ButtonProps): JSX.Element;
-export default Button;
+declare const WrappedButton: typeof Button;
+export default WrappedButton;
 //# sourceMappingURL=Button.d.ts.map

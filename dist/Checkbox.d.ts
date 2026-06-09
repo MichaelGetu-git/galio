@@ -55,5 +55,6 @@ iconFamily, // deprecated
 iconName, // deprecated
 iconSize, // deprecated
 iconProps, checked: controlledChecked, initialValue, label, labelStyle, labelColor, onChange, style, accessibilityLabel, accessibilityHint, }: CheckboxProps): JSX.Element;
-export default Checkbox;
+declare const WrappedCheckbox: typeof Checkbox;
+export default WrappedCheckbox;
 //# sourceMappingURL=Checkbox.d.ts.map

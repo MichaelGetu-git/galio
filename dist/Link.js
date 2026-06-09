@@ -51,6 +51,7 @@ var react_1 = __importStar(require("react"));
 var Text_1 = __importDefault(require("./Text"));
 var theme_1 = require("./theme");
 var react_native_1 = require("react-native");
+var interop_1 = require("./helpers/interop");
 var Link = (0, react_1.forwardRef)(function (_a, ref) {
     var children = _a.children, onPress = _a.onPress, style = _a.style, textStyle = _a.textStyle, color = _a.color, _b = _a.disabled, disabled = _b === void 0 ? false : _b, _c = _a.activeOpacity, activeOpacity = _c === void 0 ? 0.7 : _c, rest = __rest(_a, ["children", "onPress", "style", "textStyle", "color", "disabled", "activeOpacity"]);
     var colors = (0, theme_1.useColors)();
@@ -90,5 +91,8 @@ var Link = (0, react_1.forwardRef)(function (_a, ref) {
             </Text_1.default>
         </react_native_1.Pressable>);
 });
-exports.default = Link;
+var WrappedLink = (0, interop_1.registerInterop)(Link, {
+    className: 'style',
+});
+exports.default = WrappedLink;
 //# sourceMappingURL=Link.js.map

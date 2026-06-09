@@ -15,6 +15,6 @@ interface SwitchProps {
     accessibilityLabel?: string;
     accessibilityHint?: string;
 }
-declare const Switch: React.FC<SwitchProps>;
-export default Switch;
+declare const WrappedSwitch: React.FC<SwitchProps>;
+export default WrappedSwitch;
 //# sourceMappingURL=Switch.d.ts.map

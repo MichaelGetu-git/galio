@@ -74,6 +74,7 @@ const Switch: React.FC<SwitchProps> = ({
 };
 
 const WrappedSwitch = registerInterop(Switch, {
-    className: 'style',
+    containerClassName: 'containerStyle', 
+    className: 'containerStyle',
 });
 export default WrappedSwitch;

@@ -68,5 +68,6 @@ interface AvatarProps {
     accessibilityHint?: string;
 }
 declare function Avatar({ source, label, labelColor, size, backgroundColor, labelFontSize, labelFontWeight, imageProps, imageStyle, containerStyle, style, labelStyle, labelTextStyle, accessibilityLabel, accessibilityHint, shadow, }: AvatarProps): JSX.Element;
-export default Avatar;
+declare const WrappedAvatar: typeof Avatar;
+export default WrappedAvatar;
 //# sourceMappingURL=Avatar.d.ts.map

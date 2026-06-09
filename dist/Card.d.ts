@@ -28,5 +28,6 @@ interface CardProps {
     shadowColor?: string;
 }
 declare function Card({ avatar, title, titleColor, caption, captionColor, location, locationColor, borderless, footerStyle, image, imageBlockStyle, imageStyle, children, card, shadow, style, neutral, fullBackgroundImage, authorImageSrc, authorTitle, authorSubTitle, onPress, rightSideComponent, flex, shadowColor, }: CardProps): JSX.Element;
-export default Card;
+declare const WrappedCard: typeof Card;
+export default WrappedCard;
 //# sourceMappingURL=Card.d.ts.map

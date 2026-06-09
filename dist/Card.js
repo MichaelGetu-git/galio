@@ -19,6 +19,7 @@ var Block_1 = __importDefault(require("./Block"));
 var theme_1 = require("./theme");
 var Icon_1 = __importDefault(require("./Icon"));
 var Text_1 = __importDefault(require("./Text"));
+var interop_1 = require("./helpers/interop");
 function renderImage(_a) {
     var image = _a.image, imageBlockStyle = _a.imageBlockStyle, imageStyle = _a.imageStyle;
     var theme = (0, theme_1.useTheme)();
@@ -208,5 +209,11 @@ var styles = function (theme, colors) {
         },
     });
 };
-exports.default = Card;
+var WrappedCard = (0, interop_1.registerInterop)(Card, {
+    className: 'style',
+    imageClassName: 'imageStyle',
+    footerClassName: 'footerStyle',
+    avatarClassName: 'avatarStyle',
+});
+exports.default = WrappedCard;
 //# sourceMappingURL=Card.js.map

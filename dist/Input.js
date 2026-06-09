@@ -62,6 +62,7 @@ var react_1 = __importStar(require("react"));
 var react_native_1 = require("react-native");
 var Icon_1 = __importDefault(require("./Icon"));
 var theme_1 = require("./theme");
+var interop_1 = require("./helpers/interop");
 var Input = (0, react_1.forwardRef)(function (_a, ref) {
     var style = _a.style, textInputStyle = _a.textInputStyle, _b = _a.type, type = _b === void 0 ? 'default' : _b, placeholderTextColor = _a.placeholderTextColor, label = _a.label, labelStyles = _a.labelStyles, _c = _a.color, color = _c === void 0 ? 'primary' : _c, help = _a.help, helpStyles = _a.helpStyles, bgColor = _a.bgColor, _d = _a.borderless, borderless = _d === void 0 ? false : _d, _e = _a.viewPass, viewPass = _e === void 0 ? false : _e, _f = _a.rounded, rounded = _f === void 0 ? false : _f, _g = _a.icon, icon = _g === void 0 ? false : _g, family = _a.family, _h = _a.left, left = _h === void 0 ? true : _h, _j = _a.right, right = _j === void 0 ? false : _j, _k = _a.iconColor, iconColor = _k === void 0 ? 'primary' : _k, // legacy
     _l = _a.iconSize, // legacy
@@ -228,5 +229,11 @@ var styles = function (theme, colors) {
         }
     });
 };
-exports.default = Input;
+var WrappedInput = (0, interop_1.registerInterop)(Input, {
+    className: 'style',
+    inputClassName: 'textInputStyle',
+    labelClassName: 'labelStyles',
+    helpClassName: 'helpStyles',
+});
+exports.default = WrappedInput;
 //# sourceMappingURL=Input.js.map

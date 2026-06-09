@@ -300,6 +300,7 @@ const styles = (theme: ReturnType<typeof useTheme>) => {
 const WrappedCheckbox=registerInterop(Checkbox,{
     className:'style',
     labelClassName:'labelStyle',
-    iconClassName:'iconStyle',
+    checkboxClassName:'checkboxStyle',
+    imageClassName:'imageStyle',
 })
 export default WrappedCheckbox;

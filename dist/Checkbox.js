@@ -17,6 +17,7 @@ var react_native_1 = require("react-native");
 var theme_1 = require("./theme");
 var Text_1 = __importDefault(require("./Text"));
 var Icon_1 = __importDefault(require("./Icon"));
+var interop_1 = require("./helpers/interop");
 function spaceAround(direction) {
     switch (direction) {
         case 'row-reverse':
@@ -168,5 +169,10 @@ var styles = function (theme) {
         },
     });
 };
-exports.default = Checkbox;
+var WrappedCheckbox = (0, interop_1.registerInterop)(Checkbox, {
+    className: 'style',
+    labelClassName: 'labelStyle',
+    iconClassName: 'iconStyle',
+});
+exports.default = WrappedCheckbox;
 //# sourceMappingURL=Checkbox.js.map

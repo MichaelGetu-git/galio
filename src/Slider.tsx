@@ -178,6 +178,9 @@ const styles = (theme: ReturnType<typeof useTheme>, colors: ReturnType<typeof us
   });
 
 const WrappedSlider=registerInterop(Slider,{
-  className: 'style',
+  className: 'containerStyle',
+  trackClassName: 'trackStyle',
+  thumbClassName: 'thumbStyle',
+  containerClassName: 'containerStyle',
 })
 export default WrappedSlider;

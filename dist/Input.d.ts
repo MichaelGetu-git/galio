@@ -64,6 +64,6 @@ export interface InputRef {
     clear: () => void;
     isFocused: () => boolean;
 }
-declare const Input: React.ForwardRefExoticComponent<InputProps & React.RefAttributes<InputRef>>;
-export default Input;
+declare const WrappedInput: React.ForwardRefExoticComponent<InputProps & React.RefAttributes<InputRef>>;
+export default WrappedInput;
 //# sourceMappingURL=Input.d.ts.map

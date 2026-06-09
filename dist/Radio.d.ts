@@ -19,5 +19,6 @@ interface RadioProps {
     size?: number | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 declare function Radio({ color, containerStyle, disabled, flexDirection, initialValue, label, labelStyle, labelColor, onChange, radioOuterStyle, radioInnerStyle, value, accessibilityLabel, accessibilityHint, size, }: RadioProps): JSX.Element;
-export default Radio;
+declare const WrappedRadio: typeof Radio;
+export default WrappedRadio;
 //# sourceMappingURL=Radio.d.ts.map

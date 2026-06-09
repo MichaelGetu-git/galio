@@ -9,6 +9,6 @@ export interface IconProps {
     [key: string]: any;
 }
 declare function Icon({ name, family, size, color, style, ...rest }: IconProps): JSX.Element | null;
-declare const _default: React.MemoExoticComponent<typeof Icon>;
-export default _default;
+declare const WrappedIcon: React.MemoExoticComponent<typeof Icon>;
+export default WrappedIcon;
 //# sourceMappingURL=Icon.d.ts.map

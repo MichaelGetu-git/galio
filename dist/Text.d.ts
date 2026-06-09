@@ -25,6 +25,6 @@ interface TypographyProps {
     [key: string]: any;
 }
 declare function Typography({ style, h1, h2, h3, h4, h5, h6, p, body, small, muted, neutral, size, color, bold, italic, center, children, theme: propTheme, shadow, ...rest }: TypographyProps): JSX.Element;
-declare const _default: React.MemoExoticComponent<typeof Typography>;
-export default _default;
+declare const WrappedTypography: React.MemoExoticComponent<typeof Typography>;
+export default WrappedTypography;
 //# sourceMappingURL=Text.d.ts.map

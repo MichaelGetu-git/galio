@@ -172,5 +172,8 @@ function Avatar({
 const WrappedAvatar=registerInterop(Avatar,{
     className: 'style',
     imageClassName: 'imageStyle',
+    containerClassName: 'containerStyle',
+    labelClassName: 'labelStyle',
+    labelTextClassName: 'labelTextStyle',
 })
 export default WrappedAvatar;

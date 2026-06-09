@@ -86,5 +86,6 @@ const Link = forwardRef<linkRef, LinkProps>(({
 
 const WrappedLink = registerInterop(Link, {
     className: 'style',
+    textClassName: 'textStyle',
 });
 export default WrappedLink;

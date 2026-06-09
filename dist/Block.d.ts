@@ -85,5 +85,6 @@ interface BlockProps {
     style?: ViewStyle | ViewStyle[];
 }
 declare function Block(props: BlockProps): JSX.Element;
-export default Block;
+declare const WrappedBlock: typeof Block;
+export default WrappedBlock;
 //# sourceMappingURL=Block.d.ts.map

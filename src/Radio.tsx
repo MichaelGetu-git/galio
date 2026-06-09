@@ -204,7 +204,8 @@ const styles = (theme: ReturnType<typeof useTheme>, colors: ReturnType<typeof us
     });
 
 const WrappedRadio = registerInterop(Radio, {
-    className:'style',
+    className:'containerStyle',
     labelClassName:'labelStyle',
+    containerClassName:'containerStyle',
 })
 export default WrappedRadio;

@@ -53,6 +53,7 @@ var theme_1 = require("./theme");
 var Text_1 = __importDefault(require("./Text"));
 var Icon_1 = __importDefault(require("./Icon"));
 var Block_1 = __importDefault(require("./Block"));
+var interop_1 = require("./helpers/interop");
 var height = react_native_1.Dimensions.get("screen").height;
 function NavBar(_a) {
     var _b = _a.back, back = _b === void 0 ? false : _b, hideLeft = _a.hideLeft, hideRight = _a.hideRight, left = _a.left, leftIconColor = _a.leftIconColor, leftHitSlop = _a.leftHitSlop, leftIconSize = _a.leftIconSize, leftIconName = _a.leftIconName, leftStyle = _a.leftStyle, leftIconFamily = _a.leftIconFamily, _c = _a.onLeftPress, onLeftPress = _c === void 0 ? function () { } : _c, right = _a.right, rightStyle = _a.rightStyle, style = _a.style, _d = _a.transparent, transparent = _d === void 0 ? false : _d, title = _a.title, titleStyle = _a.titleStyle, titleNumberOfLines = _a.titleNumberOfLines, titleTextProps = _a.titleTextProps, accessibilityLabel = _a.accessibilityLabel;
@@ -180,5 +181,11 @@ var styles = function (theme, colors) {
         },
     });
 };
-exports.default = NavBar;
+var WrappedNavBar = (0, interop_1.registerInterop)(NavBar, {
+    className: 'style',
+    titleClassName: 'titleStyle',
+    leftClassName: 'leftStyle',
+    rightClassName: 'rightStyle',
+});
+exports.default = WrappedNavBar;
 //# sourceMappingURL=NavBar.js.map

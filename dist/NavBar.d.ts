@@ -23,5 +23,6 @@ interface NavBarProps {
     accessibilityLabel?: string;
 }
 declare function NavBar({ back, hideLeft, hideRight, left, leftIconColor, leftHitSlop, leftIconSize, leftIconName, leftStyle, leftIconFamily, onLeftPress, right, rightStyle, style, transparent, title, titleStyle, titleNumberOfLines, titleTextProps, accessibilityLabel, }: NavBarProps): JSX.Element;
-export default NavBar;
+declare const WrappedNavBar: typeof NavBar;
+export default WrappedNavBar;
 //# sourceMappingURL=NavBar.d.ts.map

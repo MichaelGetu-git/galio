@@ -15,6 +15,6 @@ interface SliderProps {
     accessibilityLabel?: string;
     accessibilityHint?: string;
 }
-declare const Slider: React.FC<SliderProps>;
-export default Slider;
+declare const WrappedSlider: React.FC<SliderProps>;
+export default WrappedSlider;
 //# sourceMappingURL=Slider.d.ts.map

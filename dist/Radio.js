@@ -16,6 +16,7 @@ var react_1 = require("react");
 var react_native_1 = require("react-native");
 var theme_1 = require("./theme");
 var Text_1 = __importDefault(require("./Text"));
+var interop_1 = require("./helpers/interop");
 function Radio(_a) {
     var _b = _a.color, color = _b === void 0 ? 'primary' : _b, containerStyle = _a.containerStyle, _c = _a.disabled, disabled = _c === void 0 ? false : _c, _d = _a.flexDirection, flexDirection = _d === void 0 ? 'row' : _d, _e = _a.initialValue, initialValue = _e === void 0 ? false : _e, label = _a.label, labelStyle = _a.labelStyle, labelColor = _a.labelColor, onChange = _a.onChange, radioOuterStyle = _a.radioOuterStyle, radioInnerStyle = _a.radioInnerStyle, value = _a.value, accessibilityLabel = _a.accessibilityLabel, accessibilityHint = _a.accessibilityHint, _f = _a.size, size = _f === void 0 ? 'md' : _f;
     var theme = (0, theme_1.useTheme)();
@@ -157,5 +158,9 @@ var styles = function (theme, colors, radioSize) {
         },
     });
 };
-exports.default = Radio;
+var WrappedRadio = (0, interop_1.registerInterop)(Radio, {
+    className: 'style',
+    labelClassName: 'labelStyle',
+});
+exports.default = WrappedRadio;
 //# sourceMappingURL=Radio.js.map

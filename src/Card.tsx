@@ -362,6 +362,6 @@ const WrappedCard=registerInterop(Card,{
     className:'style',
     imageClassName:'imageStyle',
     footerClassName:'footerStyle',
-    avatarClassName:'avatarStyle',
+    imageBlockClassName:'imageBlockStyle',
 })
 export default WrappedCard;
