@@ -1,7 +1,7 @@
-const {LIGHT_COLORS}=require('./dist/theme/colors');
-const SIZES=require('./dist/theme/sizes').default;
+const {LIGHT_COLORS}=require('./src/theme/colors');
+const SIZES=require('./src/theme/sizes').default;
 
-module.exports={
+export default {
     theme:{
         extend:{
             colors:{
