@@ -172,7 +172,8 @@ var styles = function (theme) {
 var WrappedCheckbox = (0, interop_1.registerInterop)(Checkbox, {
     className: 'style',
     labelClassName: 'labelStyle',
-    iconClassName: 'iconStyle',
+    checkboxClassName: 'checkboxStyle',
+    imageClassName: 'imageStyle',
 });
 exports.default = WrappedCheckbox;
 //# sourceMappingURL=Checkbox.js.map

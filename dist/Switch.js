@@ -72,7 +72,8 @@ var Switch = function (_a) {
     return (<react_native_1.Switch value={currentValue} onValueChange={handleValueChange} disabled={disabled} trackColor={finalTrackColor} ios_backgroundColor={finalIosBackgroundColor} style={containerStyle} accessibilityRole="switch" accessibilityLabel={accessibilityLabel || 'Switch'} accessibilityHint={accessibilityHint || 'Toggle switch on or off'} accessibilityState={{ checked: currentValue }}/>);
 };
 var WrappedSwitch = (0, interop_1.registerInterop)(Switch, {
-    className: 'style',
+    containerClassName: 'containerStyle',
+    className: 'containerStyle',
 });
 exports.default = WrappedSwitch;
 //# sourceMappingURL=Switch.js.map

@@ -69,6 +69,9 @@ function Avatar(_a) {
 var WrappedAvatar = (0, interop_1.registerInterop)(Avatar, {
     className: 'style',
     imageClassName: 'imageStyle',
+    containerClassName: 'containerStyle',
+    labelClassName: 'labelStyle',
+    labelTextClassName: 'labelTextStyle',
 });
 exports.default = WrappedAvatar;
 //# sourceMappingURL=Avatar.js.map

@@ -159,7 +159,10 @@ var styles = function (theme, colors) {
     });
 };
 var WrappedSlider = (0, interop_1.registerInterop)(Slider, {
-    className: 'style',
+    className: 'containerStyle',
+    trackClassName: 'trackStyle',
+    thumbClassName: 'thumbStyle',
+    containerClassName: 'containerStyle',
 });
 exports.default = WrappedSlider;
 //# sourceMappingURL=Slider.js.map

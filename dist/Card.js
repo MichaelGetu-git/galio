@@ -213,7 +213,7 @@ var WrappedCard = (0, interop_1.registerInterop)(Card, {
     className: 'style',
     imageClassName: 'imageStyle',
     footerClassName: 'footerStyle',
-    avatarClassName: 'avatarStyle',
+    imageBlockClassName: 'imageBlockStyle',
 });
 exports.default = WrappedCard;
 //# sourceMappingURL=Card.js.map

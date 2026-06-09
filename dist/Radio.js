@@ -159,8 +159,9 @@ var styles = function (theme, colors, radioSize) {
     });
 };
 var WrappedRadio = (0, interop_1.registerInterop)(Radio, {
-    className: 'style',
+    className: 'containerStyle',
     labelClassName: 'labelStyle',
+    containerClassName: 'containerStyle',
 });
 exports.default = WrappedRadio;
 //# sourceMappingURL=Radio.js.map

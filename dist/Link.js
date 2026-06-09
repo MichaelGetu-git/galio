@@ -93,6 +93,7 @@ var Link = (0, react_1.forwardRef)(function (_a, ref) {
 });
 var WrappedLink = (0, interop_1.registerInterop)(Link, {
     className: 'style',
+    textClassName: 'textStyle',
 });
 exports.default = WrappedLink;
 //# sourceMappingURL=Link.js.map
