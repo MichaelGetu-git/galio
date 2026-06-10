@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Dimensions, StyleSheet, Animated, View } from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { useTheme, useColors } from './theme';
 import Text from './Text';
 
@@ -33,9 +34,7 @@ function Toast({
     const theme = useTheme();
     const colors = useColors();
     const [internalIsShow, setInternalIsShow] = useState(isShow);
-    const [opacity, setOpacity] = useState(0);
-    const fadeAnim = useRef(new Animated.Value(0)).current;
-    const animationRef = useRef<Animated.CompositeAnimation | null>(null);
+    const opacity = useSharedValue(0);
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const getThemeColor = (colorName?: string) => {
@@ -69,29 +68,14 @@ function Toast({
     };
 
     useEffect(() => {
-        
         if (isShow && !internalIsShow) {
-            
             setInternalIsShow(true);
-            setOpacity(1);
-            animationRef.current = Animated.timing(fadeAnim, {
-                toValue: 1,
-                duration: fadeInDuration,
-                useNativeDriver: false,
-            });
-            
+            opacity.value = withTiming(1, { duration: fadeInDuration });
         }
         
         if (!isShow && internalIsShow) {
             console.log('Hiding toast');
-            setOpacity(0); // Set opacity immediately for fallback
-            
-            animationRef.current = Animated.timing(fadeAnim, {
-                toValue: 0,
-                duration: fadeOutDuration,
-                useNativeDriver: false,
-            });
-            
+            opacity.value = withTiming(0, { duration: fadeOutDuration });
             
             timeoutRef.current = setTimeout(() => {
                 setInternalIsShow(false);
@@ -102,11 +86,8 @@ function Toast({
             if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
             }
-            if (animationRef.current) {
-                animationRef.current.stop();
-            }
         };
-    }, [isShow, internalIsShow, fadeInDuration, fadeOutDuration, fadeAnim]);
+    }, [isShow, internalIsShow, fadeInDuration, fadeOutDuration]);
 
     const renderContent = () => {
         if (typeof children === 'string') {
@@ -123,12 +104,15 @@ function Toast({
     
    
     
+    const animatedStyle = useAnimatedStyle(() => ({
+        opacity: opacity.value,
+    }));
+
     const toastStyles = [
         styles(theme, colors).toast,
         {
             backgroundColor,
             top: topPosition,
-            opacity: opacity,
             borderRadius,
             borderColor: colors.border || 'rgba(255,255,255,0.3)',
             shadowColor: colors.black,
@@ -138,7 +122,7 @@ function Toast({
 
     return (
         <View style={styles(theme, colors).overlay} pointerEvents="none">
-            <Animated.View style={toastStyles}>
+            <Animated.View style={[toastStyles, animatedStyle]}>
                 {renderContent()}
             </Animated.View>
         </View>
