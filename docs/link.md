@@ -44,3 +44,29 @@ import Link from 'galio-framework/Link';
 - Both `color` and `textStyle.color` accept theme keys for consistent theming.
 - The link is accessible and uses `accessibilityRole="link"`.
 - Disabled links are not clickable and have reduced opacity.
+
+---
+
+## NativeWind / Tailwind (optional)
+
+Galio supports [NativeWind](https://www.nativewind.dev/) v4 when it is installed in your app. Tailwind `className` props are converted to the same style props documented above — use `className`, `style`, or both together.
+
+Requires NativeWind v4 and the Galio Tailwind preset in your app's `tailwind.config.js` (`nativewind/preset` + `galio-tailwind-preset`). See [Button docs](./button.md#nativewind--tailwind-optional) for full setup and token reference.
+
+### className mapping
+
+| Prop | Maps to |
+|------|---------|
+| `className` | `style` (Pressable) |
+| `textClassName` | `textStyle` |
+
+### Example
+
+```tsx
+<Link
+  onPress={() => {}}
+  textClassName="text-galio-info underline text-galio-body"
+>
+  Learn more
+</Link>
+```

@@ -63,3 +63,26 @@ Font sizes and colors are pulled from your theme configuration. You can customiz
 ## Customization
 
 Override any prop or theme value for full control over your app's typography.
+
+---
+
+## NativeWind / Tailwind (optional)
+
+Galio supports [NativeWind](https://www.nativewind.dev/) v4 when it is installed in your app. Tailwind `className` props are converted to the same style props documented above — use `className`, `style`, or both together.
+
+Requires NativeWind v4 and the Galio Tailwind preset in your app's `tailwind.config.js` (`nativewind/preset` + `galio-tailwind-preset`). See [Button docs](./button.md#nativewind--tailwind-optional) for full setup and token reference.
+
+### className mapping
+
+| Prop | Maps to |
+|------|---------|
+| `className` | `style` |
+
+### Example
+
+```tsx
+<Text h3 bold className="text-galio-primary mb-2">Heading</Text>
+<Text className="text-galio-body text-galio-textSecondary">Body copy</Text>
+```
+
+Typography props (`h1`–`small`, `bold`, etc.) and `className` can be combined. Typography props set the base size; Tailwind can override color, spacing, and more.
