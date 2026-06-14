@@ -60,3 +60,29 @@ import Toast from 'galio-be/src/Toast';
 ## Customization
 
 Override any prop or theme value for full control over your app's toast notifications.
+## NativeWind / Tailwind (optional)
+
+Toast supports [NativeWind](https://www.nativewind.dev/) v4 when it is installed in your app. Tailwind `className` props are converted to the corresponding React Native style props, allowing you to customize the toast container and text using utility classes.
+
+Requires NativeWind v4 and the Galio Tailwind preset in your app's `tailwind.config.js` (`nativewind/preset` + `galio-tailwind-preset`).
+
+### className mapping
+
+| Prop            | Maps to     |
+| --------------- | ----------- |
+| `className`     | `style`     |
+| `textClassName` | `textStyle` |
+
+### Example
+
+```tsx
+<Toast
+  isShow={showToast}
+  color="success"
+  className="bg-galio-success rounded-xl px-4 py-3"
+  textClassName="text-galio-white font-bold text-center"
+>
+  Profile updated successfully
+</Toast>
+```
+
