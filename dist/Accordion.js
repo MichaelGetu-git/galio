@@ -55,9 +55,10 @@ var Text_1 = __importDefault(require("./Text"));
 var Block_1 = __importDefault(require("./Block"));
 var Icon_1 = __importDefault(require("./Icon"));
 var theme_1 = require("./theme");
+var interop_1 = require("./helpers/interop");
 var width = react_native_2.Dimensions.get('screen').width;
 function AccordionContent(_a) {
-    var content = _a.content, contentStyle = _a.contentStyle;
+    var content = _a.content, contentStyle = _a.contentStyle, className = _a.className, contentClassName = _a.contentClassName;
     var theme = (0, theme_1.useTheme)();
     var colors = (0, theme_1.useColors)();
     return <Text_1.default style={[styles(theme, colors).content, contentStyle]}>{content}</Text_1.default>;
@@ -195,5 +196,9 @@ var styles = function (theme, colors) {
         },
     });
 };
-exports.default = Accordion;
+var WrappedAccordion = (0, interop_1.registerInterop)(Accordion, {
+    className: 'contentStyle',
+    contentClassName: 'contentStyle',
+});
+exports.default = WrappedAccordion;
 //# sourceMappingURL=Accordion.js.map

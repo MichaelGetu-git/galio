@@ -1,12 +1,12 @@
 import { ReactNode, ComponentType } from 'react';
 import type { JSX } from 'react';
 import { ViewStyle, TextStyle, ImageStyle } from 'react-native';
-import GALIO_COLORS, { LIGHT_COLORS, SHADOWS } from './colors';
+import { LIGHT_COLORS, SHADOWS } from './colors';
 import GALIO_SIZES from './sizes';
 export type ThemeMode = 'light' | 'dark' | 'auto';
 export type SemanticColors = typeof LIGHT_COLORS;
 export interface GalioTheme {
-    COLORS: typeof GALIO_COLORS;
+    COLORS: any;
     SIZES: typeof GALIO_SIZES;
     colors: SemanticColors;
     sizes: typeof GALIO_SIZES;
@@ -21,7 +21,7 @@ export interface GalioProviderProps {
         colors?: Partial<SemanticColors>;
         sizes?: Partial<typeof GALIO_SIZES>;
         shadows?: Partial<typeof SHADOWS>;
-        COLORS?: Partial<typeof GALIO_COLORS>;
+        COLORS?: any;
         SIZES?: Partial<typeof GALIO_SIZES>;
         customTheme?: Record<string, any>;
     };
@@ -84,71 +84,7 @@ export declare function GalioProvider({ mode, theme, children }: GalioProviderPr
  * Legacy hook for getting mode-specific colors
  * @deprecated Use useColors() instead for automatic mode adaptation
  */
-export declare function useThemeColors(): {
-    facebook: string;
-    twitter: string;
-    dribbble: string;
-    primary: string;
-    primaryDark: string;
-    primaryLight: string;
-    info: string;
-    infoDark: string;
-    infoLight: string;
-    danger: string;
-    dangerDark: string;
-    dangerLight: string;
-    warning: string;
-    warningDark: string;
-    warningLight: string;
-    success: string;
-    successDark: string;
-    successLight: string;
-    input: string;
-    placeholder: string;
-    navbar: string;
-    block: string;
-    icon: string;
-    background: string;
-    text: string;
-    white: string;
-    black: string;
-    grey: string;
-    muted: string;
-    transparent: string;
-    neutral: (opacity?: number) => string;
-} | {
-    facebook: string;
-    twitter: string;
-    dribbble: string;
-    primary: string;
-    primaryDark: string;
-    primaryLight: string;
-    info: string;
-    infoDark: string;
-    infoLight: string;
-    danger: string;
-    dangerDark: string;
-    dangerLight: string;
-    warning: string;
-    warningDark: string;
-    warningLight: string;
-    success: string;
-    successDark: string;
-    successLight: string;
-    input: string;
-    placeholder: string;
-    navbar: string;
-    block: string;
-    icon: string;
-    background: string;
-    text: string;
-    white: string;
-    black: string;
-    grey: string;
-    muted: string;
-    transparent: string;
-    neutral: (opacity?: number) => string;
-};
+export declare function useThemeColors(): any;
 /**
  * Create styles based on theme
  * @deprecated Use useColors() and create styles directly for better performance

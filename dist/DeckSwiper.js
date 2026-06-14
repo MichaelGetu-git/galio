@@ -62,9 +62,10 @@ var react_native_gesture_handler_1 = require("react-native-gesture-handler");
 var react_native_reanimated_1 = __importStar(require("react-native-reanimated"));
 var theme_1 = require("./theme");
 var Block_1 = __importDefault(require("./Block"));
+var interop_1 = require("./helpers/interop");
 var SCREEN_WIDTH = react_native_1.Dimensions.get('screen').width;
 function DeckSwiper(_a) {
-    var onSwipeRight = _a.onSwipeRight, onSwipeLeft = _a.onSwipeLeft, _b = _a.focusedElementStyle, focusedElementStyle = _b === void 0 ? {} : _b, _c = _a.nextElementStyle, nextElementStyle = _c === void 0 ? {} : _c, components = _a.components, style = _a.style, _d = _a.swipeThreshold, swipeThreshold = _d === void 0 ? 110 : _d, _e = _a.cardWidth, cardWidth = _e === void 0 ? SCREEN_WIDTH * 0.7 : _e, _f = _a.cardContainerStyle, cardContainerStyle = _f === void 0 ? {} : _f, _g = _a.cardShadow, cardShadow = _g === void 0 ? 'md' : _g, cardBackgroundColor = _a.cardBackgroundColor, nextCardBackgroundColor = _a.nextCardBackgroundColor, _h = _a.nextCardShadow, nextCardShadow = _h === void 0 ? 'sm' : _h, borderRadius = _a.borderRadius, _j = _a.showNextCard, showNextCard = _j === void 0 ? true : _j;
+    var onSwipeRight = _a.onSwipeRight, onSwipeLeft = _a.onSwipeLeft, _b = _a.focusedElementStyle, focusedElementStyle = _b === void 0 ? {} : _b, _c = _a.nextElementStyle, nextElementStyle = _c === void 0 ? {} : _c, components = _a.components, style = _a.style, _d = _a.swipeThreshold, swipeThreshold = _d === void 0 ? 110 : _d, _e = _a.cardWidth, cardWidth = _e === void 0 ? SCREEN_WIDTH * 0.7 : _e, _f = _a.cardContainerStyle, cardContainerStyle = _f === void 0 ? {} : _f, _g = _a.cardShadow, cardShadow = _g === void 0 ? 'md' : _g, cardBackgroundColor = _a.cardBackgroundColor, nextCardBackgroundColor = _a.nextCardBackgroundColor, _h = _a.nextCardShadow, nextCardShadow = _h === void 0 ? 'sm' : _h, borderRadius = _a.borderRadius, _j = _a.showNextCard, showNextCard = _j === void 0 ? true : _j, className = _a.className, focusedElementClassName = _a.focusedElementClassName, nextElementClassName = _a.nextElementClassName, cardContainerClassName = _a.cardContainerClassName;
     var theme = (0, theme_1.useTheme)();
     var colors = (0, theme_1.useColors)();
     var _k = (0, react_1.useState)(0), currentIndex = _k[0], setCurrentIndex = _k[1];
@@ -169,5 +170,11 @@ function DeckSwiper(_a) {
             {renderComponents(components)}
         </Block_1.default>);
 }
-exports.default = DeckSwiper;
+var WrappedDeckSwiper = (0, interop_1.registerInterop)(DeckSwiper, {
+    className: 'style',
+    focusedElementClassName: 'focusedElementStyle',
+    nextElementClassName: 'nextElementStyle',
+    cardContainerClassName: 'cardContainerStyle',
+});
+exports.default = WrappedDeckSwiper;
 //# sourceMappingURL=DeckSwiper.js.map

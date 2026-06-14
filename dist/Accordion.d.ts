@@ -19,5 +19,6 @@ interface MainAccordionProps {
     shadow?: 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 declare function Accordion({ dataArray, icon, expandedIcon, headerStyle, contentStyle, opened, onAccordionOpen, onAccordionClose, listStyle, style, titleStyle, shadow, }: MainAccordionProps): JSX.Element;
-export default Accordion;
+declare const WrappedAccordion: typeof Accordion;
+export default WrappedAccordion;
 //# sourceMappingURL=Accordion.d.ts.map
