@@ -1,6 +1,7 @@
 import { JSX } from "react";
 import { StyleSheet, ViewStyle, View, Text, Image, ImageSourcePropType, Platform, ImageStyle, TextStyle } from "react-native";
 import { useTheme, useColors } from "./theme";
+import { registerInterop } from './helpers/interop';    
 
 interface AvatarProps {
     /**
@@ -68,6 +69,14 @@ interface AvatarProps {
      * Accessibility hint for screen readers
      */
     accessibilityHint?: string;
+
+
+    className?:string;
+    imageClassName?:string;
+    containerClassName?:string;
+    labelClassName?:string;
+    labelTextClassName?:string;
+
 }
 
 
@@ -88,6 +97,11 @@ function Avatar({
     accessibilityLabel,
     accessibilityHint,
     shadow,
+    className,
+    imageClassName,
+    containerClassName,
+    labelClassName,
+    labelTextClassName
 }: AvatarProps): JSX.Element {
     const theme = useTheme();
     const colors = theme.colors;
@@ -168,5 +182,11 @@ function Avatar({
         </View>
     );
 }
-
-export default Avatar;
+const WrappedAvatar=registerInterop(Avatar,{
+    className: 'style',
+    imageClassName: 'imageStyle',
+    containerClassName: 'containerStyle',
+    labelClassName: 'labelStyle',
+    labelTextClassName: 'labelTextStyle',
+})
+export default WrappedAvatar;

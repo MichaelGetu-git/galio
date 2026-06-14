@@ -10,7 +10,10 @@ interface ToastProps {
     round?: boolean;
     style?: any;
     textStyle?: any;
+    className?: string;
+    textClassName?: string;
 }
-declare function Toast({ children, isShow, positionIndicator, positionOffset, fadeInDuration, fadeOutDuration, color, round, style, textStyle, }: ToastProps): React.JSX.Element;
-export default Toast;
+declare function Toast({ children, isShow, positionIndicator, positionOffset, fadeInDuration, fadeOutDuration, color, round, style, textStyle, className, textClassName }: ToastProps): React.JSX.Element;
+declare const WrappedToast: typeof Toast;
+export default WrappedToast;
 //# sourceMappingURL=Toast.d.ts.map

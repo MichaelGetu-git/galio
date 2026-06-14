@@ -62,12 +62,13 @@ var react_1 = __importStar(require("react"));
 var react_native_1 = require("react-native");
 var Icon_1 = __importDefault(require("./Icon"));
 var theme_1 = require("./theme");
+var interop_1 = require("./helpers/interop");
 var Input = (0, react_1.forwardRef)(function (_a, ref) {
     var style = _a.style, textInputStyle = _a.textInputStyle, _b = _a.type, type = _b === void 0 ? 'default' : _b, placeholderTextColor = _a.placeholderTextColor, label = _a.label, labelStyles = _a.labelStyles, _c = _a.color, color = _c === void 0 ? 'primary' : _c, help = _a.help, helpStyles = _a.helpStyles, bgColor = _a.bgColor, _d = _a.borderless, borderless = _d === void 0 ? false : _d, _e = _a.viewPass, viewPass = _e === void 0 ? false : _e, _f = _a.rounded, rounded = _f === void 0 ? false : _f, _g = _a.icon, icon = _g === void 0 ? false : _g, family = _a.family, _h = _a.left, left = _h === void 0 ? true : _h, _j = _a.right, right = _j === void 0 ? false : _j, _k = _a.iconColor, iconColor = _k === void 0 ? 'primary' : _k, // legacy
     _l = _a.iconSize, // legacy
     iconSize = _l === void 0 ? 16 : _l, // legacy
     _m = _a.iconProps, // legacy
-    iconProps = _m === void 0 ? {} : _m, _o = _a.topHelp, topHelp = _o === void 0 ? true : _o, _p = _a.bottomHelp, bottomHelp = _p === void 0 ? false : _p, iconContent = _a.iconContent, _q = _a.password, password = _q === void 0 ? false : _q, error = _a.error, onRef = _a.onRef, rest = __rest(_a, ["style", "textInputStyle", "type", "placeholderTextColor", "label", "labelStyles", "color", "help", "helpStyles", "bgColor", "borderless", "viewPass", "rounded", "icon", "family", "left", "right", "iconColor", "iconSize", "iconProps", "topHelp", "bottomHelp", "iconContent", "password", "error", "onRef"]);
+    iconProps = _m === void 0 ? {} : _m, _o = _a.topHelp, topHelp = _o === void 0 ? true : _o, _p = _a.bottomHelp, bottomHelp = _p === void 0 ? false : _p, iconContent = _a.iconContent, _q = _a.password, password = _q === void 0 ? false : _q, error = _a.error, className = _a.className, inputClassName = _a.inputClassName, labelClassName = _a.labelClassName, helpClassName = _a.helpClassName, onRef = _a.onRef, rest = __rest(_a, ["style", "textInputStyle", "type", "placeholderTextColor", "label", "labelStyles", "color", "help", "helpStyles", "bgColor", "borderless", "viewPass", "rounded", "icon", "family", "left", "right", "iconColor", "iconSize", "iconProps", "topHelp", "bottomHelp", "iconContent", "password", "error", "className", "inputClassName", "labelClassName", "helpClassName", "onRef"]);
     var theme = (0, theme_1.useTheme)();
     var colors = (0, theme_1.useColors)();
     var _r = (0, react_1.useState)(password), isPassword = _r[0], setIsPassword = _r[1];
@@ -228,5 +229,11 @@ var styles = function (theme, colors) {
         }
     });
 };
-exports.default = Input;
+var WrappedInput = (0, interop_1.registerInterop)(Input, {
+    className: 'style',
+    inputClassName: 'textInputStyle',
+    labelClassName: 'labelStyles',
+    helpClassName: 'helpStyles',
+});
+exports.default = WrappedInput;
 //# sourceMappingURL=Input.js.map

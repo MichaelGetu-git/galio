@@ -50,12 +50,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(require("react"));
 var fontisto_1 = require("@react-native-vector-icons/fontisto");
 var vector_icons_1 = require("@expo/vector-icons");
+var interop_1 = require("./helpers/interop");
 var galio_json_1 = __importDefault(require("./config/galio.json"));
 var getIconType_1 = __importDefault(require("./helpers/getIconType"));
 var theme_1 = require("./theme");
 var Galio = (0, vector_icons_1.createIconSetFromIcoMoon)(galio_json_1.default, 'Galio', require('./fonts/galio.ttf'));
 function Icon(_a) {
-    var name = _a.name, family = _a.family, size = _a.size, color = _a.color, style = _a.style, rest = __rest(_a, ["name", "family", "size", "color", "style"]);
+    var name = _a.name, family = _a.family, size = _a.size, color = _a.color, style = _a.style, className = _a.className, rest = __rest(_a, ["name", "family", "size", "color", "style", "className"]);
     var theme = (0, theme_1.useTheme)();
     var colors = (0, theme_1.useColors)();
     // Semantic size mapping to theme sizes
@@ -90,5 +91,9 @@ function Icon(_a) {
     var IconInstance = (0, getIconType_1.default)(family);
     return name && IconInstance ? (<IconInstance name={name} size={iconSize} color={iconColor} style={style} {...rest}/>) : null;
 }
-exports.default = (0, react_1.memo)(Icon);
+var MemoizedIcon = (0, react_1.memo)(Icon);
+var WrappedIcon = (0, interop_1.registerInterop)(MemoizedIcon, {
+    className: 'style',
+});
+exports.default = WrappedIcon;
 //# sourceMappingURL=Icon.js.map

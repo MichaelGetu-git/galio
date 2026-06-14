@@ -65,3 +65,31 @@ import Switch from 'galio-be/src/Switch';
 ---
 
 For more details, see the [theme documentation](./theme.md) and other component docs.
+
+---
+
+## NativeWind / Tailwind (optional)
+
+Galio supports [NativeWind](https://www.nativewind.dev/) v4 when it is installed in your app. Tailwind `className` props are converted to the same style props documented above — use `className`, `style`, or both together.
+
+Requires NativeWind v4 and the Galio Tailwind preset in your app's `tailwind.config.js` (`nativewind/preset` + `galio-tailwind-preset`). See [Button docs](./button.md#nativewind--tailwind-optional) for full setup and token reference.
+
+### className mapping
+
+| Prop | Maps to |
+|------|---------|
+| `className` | `containerStyle` |
+| `containerClassName` | `containerStyle` (alias) |
+
+### Example
+
+```tsx
+<Switch
+  value={enabled}
+  onValueChange={setEnabled}
+  color="primary"
+  className="m-galio-base"
+/>
+```
+
+Track and thumb colors still use the `color` and `trackColor` props, not Tailwind classes.

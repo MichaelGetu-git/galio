@@ -3,7 +3,7 @@ import { Image, ImageStyle, Pressable, StyleSheet, TextStyle, View, ViewStyle } 
 import { useTheme, useColors } from "./theme";
 import Text from "./Text";
 import Icon from "./Icon";
-
+import {registerInterop} from './helpers/interop';
 interface SpaceAroundProps {
     direction: 'row-reverse' | 'column' | 'column-reverse' | 'row';
 }
@@ -146,6 +146,11 @@ interface CheckboxProps {
     style?: ViewStyle;
     accessibilityLabel?: string;
     accessibilityHint?: string;
+
+    className?:string;
+    labelClassName?:string;
+    checkboxClassName?:string,
+    imageClassName?:string
 }
 
 function Checkbox({
@@ -169,6 +174,10 @@ function Checkbox({
     style,
     accessibilityLabel,
     accessibilityHint,
+    className,
+    labelClassName,
+    checkboxClassName,
+    imageClassName
 }: CheckboxProps): JSX.Element {
     const theme = useTheme();
     const colors = useColors();
@@ -297,4 +306,10 @@ const styles = (theme: ReturnType<typeof useTheme>) => {
   });
 };
 
-export default Checkbox;
+const WrappedCheckbox=registerInterop(Checkbox,{
+    className:'style',
+    labelClassName:'labelStyle',
+    checkboxClassName:'checkboxStyle',
+    imageClassName:'imageStyle',
+})
+export default WrappedCheckbox;

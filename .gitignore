@@ -4,3 +4,5 @@ npm-debug.*
 yarn.lock
 .DS_Store
 *.log
+spike-test
+testing-repo

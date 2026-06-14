@@ -99,3 +99,32 @@ import Input from 'galio-framework/Input';
 - Pass any additional props as needed.
 - For custom icons, use `iconContent`.
 - All color-related props accept theme keys or color strings for full theme consistency.
+
+---
+
+## NativeWind / Tailwind (optional)
+
+Galio supports [NativeWind](https://www.nativewind.dev/) v4 when it is installed in your app. Tailwind `className` props are converted to the same style props documented above — use `className`, `style`, or both together.
+
+Requires NativeWind v4 and the Galio Tailwind preset in your app's `tailwind.config.js` (`nativewind/preset` + `galio-tailwind-preset`). See [Button docs](./button.md#nativewind--tailwind-optional) for full setup and token reference.
+
+### className mapping
+
+| Prop | Maps to |
+|------|---------|
+| `className` | `style` (outer container) |
+| `inputClassName` | `textInputStyle` |
+| `labelClassName` | `labelStyles` |
+| `helpClassName` | `helpStyles` |
+
+### Example
+
+```tsx
+<Input
+  label="Email"
+  placeholder="you@example.com"
+  className="border border-galio-border rounded-galio-input bg-galio-white"
+  inputClassName="text-galio-body text-galio-text"
+  labelClassName="text-galio-small text-galio-textSecondary"
+/>
+```

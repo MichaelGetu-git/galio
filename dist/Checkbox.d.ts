@@ -49,11 +49,16 @@ interface CheckboxProps {
     style?: ViewStyle;
     accessibilityLabel?: string;
     accessibilityHint?: string;
+    className?: string;
+    labelClassName?: string;
+    checkboxClassName?: string;
+    imageClassName?: string;
 }
 declare function Checkbox({ checkboxStyle, color, disabled, flexDirection, image, imageStyle, iconColor, // deprecated
 iconFamily, // deprecated
 iconName, // deprecated
 iconSize, // deprecated
-iconProps, checked: controlledChecked, initialValue, label, labelStyle, labelColor, onChange, style, accessibilityLabel, accessibilityHint, }: CheckboxProps): JSX.Element;
-export default Checkbox;
+iconProps, checked: controlledChecked, initialValue, label, labelStyle, labelColor, onChange, style, accessibilityLabel, accessibilityHint, className, labelClassName, checkboxClassName, imageClassName }: CheckboxProps): JSX.Element;
+declare const WrappedCheckbox: typeof Checkbox;
+export default WrappedCheckbox;
 //# sourceMappingURL=Checkbox.d.ts.map

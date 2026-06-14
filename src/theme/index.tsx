@@ -13,7 +13,7 @@ export type SemanticColors = typeof LIGHT_COLORS;
 // Modern theme interface
 export interface GalioTheme {
     // Legacy structure (deprecated but maintained for compatibility)
-    COLORS: typeof GALIO_COLORS;
+    COLORS: any;
     SIZES: typeof GALIO_SIZES;
 
     // Modern semantic structure
@@ -36,7 +36,7 @@ export interface GalioProviderProps {
         shadows?: Partial<typeof SHADOWS>;
 
         // Legacy API (deprecated)
-        COLORS?: Partial<typeof GALIO_COLORS>;
+        COLORS?: any;
         SIZES?: Partial<typeof GALIO_SIZES>;
         customTheme?: Record<string, any>;
     };

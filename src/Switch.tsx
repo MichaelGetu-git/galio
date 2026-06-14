@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useState, JSX } from 'react';
 import { Switch as RNSwitch, ViewStyle } from 'react-native';
 import { useColors } from './theme';
-
+import { registerInterop } from './helpers/interop';
 interface SwitchProps {
     value?: boolean;
     onValueChange?: (value: boolean) => void;
@@ -13,6 +13,9 @@ interface SwitchProps {
     containerStyle?: ViewStyle;
     accessibilityLabel?: string;
     accessibilityHint?: string;
+
+    className?:string;
+    containerClassName?:string;
 }
 
 const Switch: React.FC<SwitchProps> = ({
@@ -25,6 +28,8 @@ const Switch: React.FC<SwitchProps> = ({
     containerStyle,
     accessibilityLabel,
     accessibilityHint,
+    className,
+    containerClassName
 }) => {
     const colors = useColors();
     const [internalValue, setInternalValue] = useState(value ?? false);
@@ -73,4 +78,8 @@ const Switch: React.FC<SwitchProps> = ({
     );
 };
 
-export default Switch;
+const WrappedSwitch = registerInterop(Switch, {
+    containerClassName: 'containerStyle', 
+    className: 'containerStyle',
+});
+export default WrappedSwitch;

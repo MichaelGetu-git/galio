@@ -4,6 +4,7 @@ import Block from "./Block";
 import { useTheme, useColors } from "./theme";
 import Icon from "./Icon";
 import Text from "./Text";
+import {registerInterop} from './helpers/interop';
 
 interface ImageProps {
     image?: string;
@@ -180,6 +181,11 @@ interface CardProps {
     rightSideComponent?: React.ReactNode;
     flex?: boolean;
     shadowColor?: string;
+
+    className?: string;
+    imageClassName?:string;
+    footerClassName?:string;
+    imageBlockClassName?:string;
 }
 
 function Card({
@@ -208,6 +214,10 @@ function Card({
     rightSideComponent,
     flex = false,
     shadowColor,
+    className,
+    imageClassName,
+    footerClassName,
+    imageBlockClassName
 }: CardProps): JSX.Element {
     const theme = useTheme();
     const colors = useColors();
@@ -357,4 +367,10 @@ const styles = (theme: ReturnType<typeof useTheme>, colors: ReturnType<typeof us
   });
 };
 
-export default Card;
+const WrappedCard=registerInterop(Card,{
+    className:'style',
+    imageClassName:'imageStyle',
+    footerClassName:'footerStyle',
+    imageBlockClassName:'imageBlockStyle',
+})
+export default WrappedCard;

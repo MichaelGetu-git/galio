@@ -57,9 +57,10 @@ var react_1 = __importStar(require("react"));
 var react_native_1 = require("react-native");
 var normalize_1 = require("./helpers/normalize");
 var theme_1 = __importStar(require("./theme"));
+var interop_1 = require("./helpers/interop");
 function Typography(_a) {
     var _b, _c, _d, _e, _f, _g, _h, _j, _k;
-    var style = _a.style, _l = _a.h1, h1 = _l === void 0 ? false : _l, _m = _a.h2, h2 = _m === void 0 ? false : _m, _o = _a.h3, h3 = _o === void 0 ? false : _o, _p = _a.h4, h4 = _p === void 0 ? false : _p, _q = _a.h5, h5 = _q === void 0 ? false : _q, _r = _a.h6, h6 = _r === void 0 ? false : _r, _s = _a.p, p = _s === void 0 ? false : _s, _t = _a.body, body = _t === void 0 ? false : _t, _u = _a.small, small = _u === void 0 ? false : _u, _v = _a.muted, muted = _v === void 0 ? false : _v, _w = _a.neutral, neutral = _w === void 0 ? false : _w, size = _a.size, color = _a.color, _x = _a.bold, bold = _x === void 0 ? false : _x, _y = _a.italic, italic = _y === void 0 ? false : _y, _z = _a.center, center = _z === void 0 ? false : _z, children = _a.children, propTheme = _a.theme, _0 = _a.shadow, shadow = _0 === void 0 ? false : _0, rest = __rest(_a, ["style", "h1", "h2", "h3", "h4", "h5", "h6", "p", "body", "small", "muted", "neutral", "size", "color", "bold", "italic", "center", "children", "theme", "shadow"]);
+    var style = _a.style, _l = _a.h1, h1 = _l === void 0 ? false : _l, _m = _a.h2, h2 = _m === void 0 ? false : _m, _o = _a.h3, h3 = _o === void 0 ? false : _o, _p = _a.h4, h4 = _p === void 0 ? false : _p, _q = _a.h5, h5 = _q === void 0 ? false : _q, _r = _a.h6, h6 = _r === void 0 ? false : _r, _s = _a.p, p = _s === void 0 ? false : _s, _t = _a.body, body = _t === void 0 ? false : _t, _u = _a.small, small = _u === void 0 ? false : _u, _v = _a.muted, muted = _v === void 0 ? false : _v, _w = _a.neutral, neutral = _w === void 0 ? false : _w, size = _a.size, color = _a.color, _x = _a.bold, bold = _x === void 0 ? false : _x, _y = _a.italic, italic = _y === void 0 ? false : _y, _z = _a.center, center = _z === void 0 ? false : _z, children = _a.children, propTheme = _a.theme, _0 = _a.shadow, shadow = _0 === void 0 ? false : _0, className = _a.className, rest = __rest(_a, ["style", "h1", "h2", "h3", "h4", "h5", "h6", "p", "body", "small", "muted", "neutral", "size", "color", "bold", "italic", "center", "children", "theme", "shadow", "className"]);
     var theme = (theme_1.useTheme === null || theme_1.useTheme === void 0 ? void 0 : (0, theme_1.useTheme)()) || propTheme || theme_1.default;
     var colors = (theme_1.useColors === null || theme_1.useColors === void 0 ? void 0 : (0, theme_1.useColors)()) || (theme === null || theme === void 0 ? void 0 : theme.colors) || {};
     // Map font sizes to theme.sizes keys
@@ -112,5 +113,9 @@ var styles = function (colors) { return react_native_1.StyleSheet.create({
         color: (colors === null || colors === void 0 ? void 0 : colors.text) || '#000',
     }
 }); };
-exports.default = (0, react_1.memo)(Typography);
+var MemoizedText = (0, react_1.memo)(Typography);
+var WrappedTypography = (0, interop_1.registerInterop)(MemoizedText, {
+    className: 'style',
+});
+exports.default = WrappedTypography;
 //# sourceMappingURL=Text.js.map

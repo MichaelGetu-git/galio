@@ -66,7 +66,13 @@ interface AvatarProps {
      * Accessibility hint for screen readers
      */
     accessibilityHint?: string;
+    className?: string;
+    imageClassName?: string;
+    containerClassName?: string;
+    labelClassName?: string;
+    labelTextClassName?: string;
 }
-declare function Avatar({ source, label, labelColor, size, backgroundColor, labelFontSize, labelFontWeight, imageProps, imageStyle, containerStyle, style, labelStyle, labelTextStyle, accessibilityLabel, accessibilityHint, shadow, }: AvatarProps): JSX.Element;
-export default Avatar;
+declare function Avatar({ source, label, labelColor, size, backgroundColor, labelFontSize, labelFontWeight, imageProps, imageStyle, containerStyle, style, labelStyle, labelTextStyle, accessibilityLabel, accessibilityHint, shadow, className, imageClassName, containerClassName, labelClassName, labelTextClassName }: AvatarProps): JSX.Element;
+declare const WrappedAvatar: typeof Avatar;
+export default WrappedAvatar;
 //# sourceMappingURL=Avatar.d.ts.map

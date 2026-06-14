@@ -17,7 +17,12 @@ interface DeckSwiperProps {
     nextCardShadow?: keyof ReturnType<typeof useTheme>["shadows"] | ViewStyle;
     borderRadius?: number;
     showNextCard?: boolean;
+    className?: string;
+    focusedElementClassName?: string;
+    nextElementClassName?: string;
+    cardContainerClassName?: string;
 }
-declare function DeckSwiper({ onSwipeRight, onSwipeLeft, focusedElementStyle, nextElementStyle, components, style, swipeThreshold, cardWidth, cardContainerStyle, cardShadow, cardBackgroundColor, nextCardBackgroundColor, nextCardShadow, borderRadius, showNextCard, }: DeckSwiperProps): JSX.Element;
-export default DeckSwiper;
+declare function DeckSwiper({ onSwipeRight, onSwipeLeft, focusedElementStyle, nextElementStyle, components, style, swipeThreshold, cardWidth, cardContainerStyle, cardShadow, cardBackgroundColor, nextCardBackgroundColor, nextCardShadow, borderRadius, showNextCard, className, focusedElementClassName, nextElementClassName, cardContainerClassName }: DeckSwiperProps): JSX.Element;
+declare const WrappedDeckSwiper: typeof DeckSwiper;
+export default WrappedDeckSwiper;
 //# sourceMappingURL=DeckSwiper.d.ts.map

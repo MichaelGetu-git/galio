@@ -1,5 +1,9 @@
-export declare const BASE = 16;
+import { BASE } from './staticSizes';
 declare const SIZES: {
+    CARD_WIDTH: number;
+    NAVBAR_TITLE_HEIGHT: number;
+    NAVBAR_LEFT_HEIGHT: number;
+    NAVBAR_RIGHT_HEIGHT: number;
     BASE: number;
     FONT: number;
     OPACITY: number;
@@ -24,7 +28,6 @@ declare const SIZES: {
     ANDROID_ELEVATION: number;
     CARD_BORDER_RADIUS: number;
     CARD_BORDER_WIDTH: number;
-    CARD_WIDTH: number;
     CARD_MARGIN_VERTICAL: number;
     CARD_FOOTER_HORIZONTAL: number;
     CARD_FOOTER_VERTICAL: number;
@@ -45,13 +48,10 @@ declare const SIZES: {
     NAVBAR_HEIGHT: number;
     NAVBAR_VERTICAL: number;
     NAVBAR_TITLE_FLEX: number;
-    NAVBAR_TITLE_HEIGHT: number;
     NAVBAR_TITLE_TEXT: number;
     NAVBAR_LEFT_FLEX: number;
-    NAVBAR_LEFT_HEIGHT: number;
     NAVBAR_LEFT_MARGIN: number;
     NAVBAR_RIGHT_FLEX: number;
-    NAVBAR_RIGHT_HEIGHT: number;
     NAVBAR_RIGHT_MARGIN: number;
     CHECKBOX_WIDTH: number;
     CHECKBOX_HEIGHT: number;
@@ -61,5 +61,6 @@ declare const SIZES: {
     RADIO_HEIGHT: number;
     RADIO_THICKNESS: number;
 };
+export { BASE };
 export default SIZES;
 //# sourceMappingURL=sizes.d.ts.map

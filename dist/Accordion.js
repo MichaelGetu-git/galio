@@ -10,20 +10,55 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_native_1 = require("react-native");
+var react_native_reanimated_1 = __importStar(require("react-native-reanimated"));
 var react_1 = require("react");
 var react_native_2 = require("react-native");
 var Text_1 = __importDefault(require("./Text"));
 var Block_1 = __importDefault(require("./Block"));
 var Icon_1 = __importDefault(require("./Icon"));
 var theme_1 = require("./theme");
+var interop_1 = require("./helpers/interop");
 var width = react_native_2.Dimensions.get('screen').width;
 function AccordionContent(_a) {
-    var content = _a.content, contentStyle = _a.contentStyle;
+    var content = _a.content, contentStyle = _a.contentStyle, className = _a.className, contentClassName = _a.contentClassName;
     var theme = (0, theme_1.useTheme)();
     var colors = (0, theme_1.useColors)();
     return <Text_1.default style={[styles(theme, colors).content, contentStyle]}>{content}</Text_1.default>;
@@ -42,17 +77,16 @@ function AccordionHeader(_a) {
 }
 function AccordionAnimation(_a) {
     var children = _a.children, style = _a.style;
-    var fade = (0, react_1.useState)(new react_native_1.Animated.Value(0.3))[0];
+    var fade = (0, react_native_reanimated_1.useSharedValue)(0.3);
     (0, react_1.useEffect)(function () {
-        react_native_1.Animated.timing(fade, {
-            toValue: 1,
-            duration: 400,
-            useNativeDriver: true
-        }).start();
+        fade.value = (0, react_native_reanimated_1.withTiming)(1, { duration: 400 });
     }, [fade]);
-    return (<react_native_1.Animated.View style={__assign(__assign({}, style), { opacity: fade })}>
+    var animatedStyle = (0, react_native_reanimated_1.useAnimatedStyle)(function () { return ({
+        opacity: fade.value
+    }); });
+    return (<react_native_reanimated_1.default.View style={[style, animatedStyle]}>
             {children}
-        </react_native_1.Animated.View>);
+        </react_native_reanimated_1.default.View>);
 }
 function AccordionItem(_a) {
     var expanded = _a.expanded, expandedIcon = _a.expandedIcon, headerStyle = _a.headerStyle, contentStyle = _a.contentStyle, icon = _a.icon, index = _a.index, item = _a.item, onAccordionClose = _a.onAccordionClose, onAccordionOpen = _a.onAccordionOpen, setSelected = _a.setSelected, titleStyle = _a.titleStyle;
@@ -162,5 +196,9 @@ var styles = function (theme, colors) {
         },
     });
 };
-exports.default = Accordion;
+var WrappedAccordion = (0, interop_1.registerInterop)(Accordion, {
+    className: 'contentStyle',
+    contentClassName: 'contentStyle',
+});
+exports.default = WrappedAccordion;
 //# sourceMappingURL=Accordion.js.map

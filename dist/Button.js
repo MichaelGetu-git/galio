@@ -7,12 +7,13 @@ var theme_1 = require("./theme");
 var react_1 = require("react");
 var react_native_1 = require("react-native");
 var Icon_1 = __importDefault(require("./Icon"));
+var interop_1 = require("./helpers/interop");
 var width = react_native_1.Dimensions.get('window').width;
 function Button(_a) {
-    var _b = _a.color, color = _b === void 0 ? 'primary' : _b, _c = _a.children, children = _c === void 0 ? undefined : _c, _d = _a.disabled, disabled = _d === void 0 ? false : _d, _e = _a.icon, icon = _e === void 0 ? undefined : _e, _f = _a.iconPosition, iconPosition = _f === void 0 ? 'left' : _f, _g = _a.iconFamily, iconFamily = _g === void 0 ? 'AntDesign' : _g, _h = _a.iconSize, iconSize = _h === void 0 ? 16 : _h, _j = _a.iconColor, iconColor = _j === void 0 ? undefined : _j, _k = _a.loading, loading = _k === void 0 ? false : _k, _l = _a.loadingSize, loadingSize = _l === void 0 ? 'small' : _l, _m = _a.loadingColor, loadingColor = _m === void 0 ? undefined : _m, _o = _a.onlyIcon, onlyIcon = _o === void 0 ? false : _o, _p = _a.opacity, opacity = _p === void 0 ? 0.8 : _p, _q = _a.round, round = _q === void 0 ? false : _q, _r = _a.size, size = _r === void 0 ? 'md' : _r, _s = _a.fullWidth, fullWidth = _s === void 0 ? false : _s, _t = _a.block, block = _t === void 0 ? false : _t, _u = _a.shadow, shadow = _u === void 0 ? undefined : _u, _v = _a.style, style = _v === void 0 ? undefined : _v, _w = _a.textStyle, textStyle = _w === void 0 ? undefined : _w, _x = _a.textTransform, textTransform = _x === void 0 ? 'none' : _x, _y = _a.onPress, onPress = _y === void 0 ? undefined : _y, _z = _a.testID, testID = _z === void 0 ? undefined : _z, _0 = _a.accessibilityLabel, accessibilityLabel = _0 === void 0 ? undefined : _0, _1 = _a.rippleColor, rippleColor = _1 === void 0 ? undefined : _1;
+    var _b = _a.color, color = _b === void 0 ? 'primary' : _b, _c = _a.children, children = _c === void 0 ? undefined : _c, _d = _a.disabled, disabled = _d === void 0 ? false : _d, _e = _a.icon, icon = _e === void 0 ? undefined : _e, _f = _a.iconPosition, iconPosition = _f === void 0 ? 'left' : _f, _g = _a.iconFamily, iconFamily = _g === void 0 ? 'AntDesign' : _g, _h = _a.iconSize, iconSize = _h === void 0 ? 16 : _h, _j = _a.iconColor, iconColor = _j === void 0 ? undefined : _j, _k = _a.loading, loading = _k === void 0 ? false : _k, _l = _a.loadingSize, loadingSize = _l === void 0 ? 'small' : _l, _m = _a.loadingColor, loadingColor = _m === void 0 ? undefined : _m, _o = _a.onlyIcon, onlyIcon = _o === void 0 ? false : _o, _p = _a.opacity, opacity = _p === void 0 ? 0.8 : _p, _q = _a.round, round = _q === void 0 ? false : _q, _r = _a.size, size = _r === void 0 ? 'md' : _r, _s = _a.fullWidth, fullWidth = _s === void 0 ? false : _s, _t = _a.block, block = _t === void 0 ? false : _t, _u = _a.shadow, shadow = _u === void 0 ? undefined : _u, _v = _a.style, style = _v === void 0 ? undefined : _v, _w = _a.textStyle, textStyle = _w === void 0 ? undefined : _w, _x = _a.textTransform, textTransform = _x === void 0 ? 'none' : _x, _y = _a.onPress, onPress = _y === void 0 ? undefined : _y, _z = _a.testID, testID = _z === void 0 ? undefined : _z, _0 = _a.accessibilityLabel, accessibilityLabel = _0 === void 0 ? undefined : _0, _1 = _a.rippleColor, rippleColor = _1 === void 0 ? undefined : _1, _2 = _a.className, className = _2 === void 0 ? '' : _2, _3 = _a.textClassName, textClassName = _3 === void 0 ? '' : _3;
     var theme = (0, theme_1.useTheme)();
     var colors = (0, theme_1.useColors)();
-    var _2 = (0, react_1.useState)(false), pressed = _2[0], setPressed = _2[1];
+    var _4 = (0, react_1.useState)(false), pressed = _4[0], setPressed = _4[1];
     var getButtonColor = (0, react_1.useCallback)(function (colorName) {
         var colorMap = {
             'primary': colors.primary,
@@ -150,5 +151,9 @@ var styles = function (theme) {
         },
     });
 };
-exports.default = Button;
+var WrappedButton = (0, interop_1.registerInterop)(Button, {
+    className: 'style',
+    textClassName: 'textStyle',
+});
+exports.default = WrappedButton;
 //# sourceMappingURL=Button.js.map

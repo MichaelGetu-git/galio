@@ -2,7 +2,7 @@ import React,{forwardRef, useImperativeHandle, useRef, useState, useEffect} from
 import { View, Text, TextInput, StyleSheet, Pressable, KeyboardTypeOptions, ViewStyle, TextStyle, Platform } from 'react-native';
 import Icon from './Icon';
 import  { useTheme, useColors } from './theme';
-
+import { registerInterop } from './helpers/interop';
 export interface InputProps {
   style?: ViewStyle;
   textInputStyle?: TextStyle;
@@ -61,6 +61,11 @@ export interface InputProps {
   keyboardType?: KeyboardTypeOptions;
   textContentType?: any;
   autoComplete?: any;
+
+  className?:string,
+  inputClassName?:string,
+  labelClassName?:string,
+  helpClassName?:string,
 }
 
 export interface InputRef {
@@ -96,6 +101,10 @@ const Input = forwardRef<InputRef, InputProps>(({
   iconContent,
   password = false,
   error,
+  className,
+  inputClassName,
+  labelClassName,
+  helpClassName,
   onRef,
   ...rest
 }, ref)=> {
@@ -308,4 +317,10 @@ const styles = (theme: ReturnType<typeof useTheme>, colors: ReturnType<typeof us
   });
 };
 
-  export default Input;
+const WrappedInput=registerInterop(Input, {
+  className:'style',
+  inputClassName:'textInputStyle',
+  labelClassName:'labelStyles',
+  helpClassName:'helpStyles',
+})
+  export default WrappedInput;

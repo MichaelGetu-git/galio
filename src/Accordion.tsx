@@ -1,19 +1,25 @@
-import { Animated, FlatList, StyleSheet, TouchableWithoutFeedback, ViewStyle, TextStyle, Pressable, View } from "react-native";
+import { FlatList, StyleSheet, TouchableWithoutFeedback, ViewStyle, TextStyle, Pressable, View } from "react-native";
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { useEffect, useState, type JSX } from "react";
 import { Dimensions, Platform } from "react-native";
 import Text from "./Text";
 import Block from "./Block";
 import Icon from "./Icon";
 import { useTheme, useColors } from "./theme";
+import { registerInterop } from './helpers/interop';    
+
 
 const { width } = Dimensions.get('screen');
 
 interface AccordionContentProps {
     content: string;
     contentStyle?: TextStyle;
+
+    className?:string
+    contentClassName?:string;
 }
 
-function AccordionContent({ content, contentStyle }: AccordionContentProps): JSX.Element {
+function AccordionContent({ content, contentStyle,className, contentClassName }: AccordionContentProps): JSX.Element {
     const theme = useTheme();
     const colors = useColors();
     return <Text style={[styles(theme, colors).content, contentStyle]}>{content}</Text>;
@@ -93,18 +99,18 @@ interface AccordionAnimationProps {
 }
 
 function AccordionAnimation({ children, style }: AccordionAnimationProps): JSX.Element {
-    const [fade] = useState(new Animated.Value(0.3));
+    const fade = useSharedValue(0.3);
 
     useEffect(() => {
-        Animated.timing(fade, {
-            toValue: 1,
-            duration: 400,
-            useNativeDriver: true
-        }).start();
+        fade.value = withTiming(1, { duration: 400 });
     }, [fade]);
 
+    const animatedStyle = useAnimatedStyle(() => ({
+        opacity: fade.value
+    }));
+
     return (
-        <Animated.View style={{ ...style, opacity: fade }}>
+        <Animated.View style={[style, animatedStyle]}>
             {children}
         </Animated.View>
     );
@@ -324,4 +330,9 @@ const styles = (theme: ReturnType<typeof useTheme>, colors: ReturnType<typeof us
     });
 };
 
-export default Accordion;
+const WrappedAccordion=registerInterop(Accordion,{
+    className:'contentStyle',
+    contentClassName:'contentStyle',
+})
+
+export default WrappedAccordion;
