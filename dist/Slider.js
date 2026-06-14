@@ -38,7 +38,7 @@ var react_native_1 = require("react-native");
 var theme_1 = require("./theme");
 var interop_1 = require("./helpers/interop");
 var Slider = function (_a) {
-    var _b = _a.value, value = _b === void 0 ? 0 : _b, _c = _a.minimumValue, minimumValue = _c === void 0 ? 0 : _c, _d = _a.maximumValue, maximumValue = _d === void 0 ? 1 : _d, _e = _a.step, step = _e === void 0 ? 0.01 : _e, onValueChange = _a.onValueChange, _f = _a.disabled, disabled = _f === void 0 ? false : _f, trackStyle = _a.trackStyle, activeColor = _a.activeColor, containerStyle = _a.containerStyle, thumbStyle = _a.thumbStyle, accessibilityLabel = _a.accessibilityLabel, accessibilityHint = _a.accessibilityHint;
+    var _b = _a.value, value = _b === void 0 ? 0 : _b, _c = _a.minimumValue, minimumValue = _c === void 0 ? 0 : _c, _d = _a.maximumValue, maximumValue = _d === void 0 ? 1 : _d, _e = _a.step, step = _e === void 0 ? 0.01 : _e, onValueChange = _a.onValueChange, _f = _a.disabled, disabled = _f === void 0 ? false : _f, trackStyle = _a.trackStyle, activeColor = _a.activeColor, containerStyle = _a.containerStyle, thumbStyle = _a.thumbStyle, accessibilityLabel = _a.accessibilityLabel, accessibilityHint = _a.accessibilityHint, className = _a.className, containerClassName = _a.containerClassName, trackClassName = _a.trackClassName, thumbClassName = _a.thumbClassName;
     var theme = (0, theme_1.useTheme)();
     var colors = (0, theme_1.useColors)();
     var _g = (0, react_1.useState)(0), containerWidth = _g[0], setContainerWidth = _g[1];

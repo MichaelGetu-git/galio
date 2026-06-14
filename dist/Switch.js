@@ -38,7 +38,7 @@ var react_native_1 = require("react-native");
 var theme_1 = require("./theme");
 var interop_1 = require("./helpers/interop");
 var Switch = function (_a) {
-    var value = _a.value, onValueChange = _a.onValueChange, _b = _a.color, color = _b === void 0 ? 'primary' : _b, _c = _a.disabled, disabled = _c === void 0 ? false : _c, trackColor = _a.trackColor, iosBackgroundColor = _a.iosBackgroundColor, containerStyle = _a.containerStyle, accessibilityLabel = _a.accessibilityLabel, accessibilityHint = _a.accessibilityHint;
+    var value = _a.value, onValueChange = _a.onValueChange, _b = _a.color, color = _b === void 0 ? 'primary' : _b, _c = _a.disabled, disabled = _c === void 0 ? false : _c, trackColor = _a.trackColor, iosBackgroundColor = _a.iosBackgroundColor, containerStyle = _a.containerStyle, accessibilityLabel = _a.accessibilityLabel, accessibilityHint = _a.accessibilityHint, className = _a.className, containerClassName = _a.containerClassName;
     var colors = (0, theme_1.useColors)();
     var _d = (0, react_1.useState)(value !== null && value !== void 0 ? value : false), internalValue = _d[0], setInternalValue = _d[1];
     var isControlled = value !== undefined;

@@ -1,9 +1,5 @@
-import { BASE } from './staticSizes';
-declare const SIZES: {
-    CARD_WIDTH: number;
-    NAVBAR_TITLE_HEIGHT: number;
-    NAVBAR_LEFT_HEIGHT: number;
-    NAVBAR_RIGHT_HEIGHT: number;
+export declare const BASE = 16;
+export declare const STATIC_SIZES: {
     BASE: number;
     FONT: number;
     OPACITY: number;
@@ -61,6 +57,4 @@ declare const SIZES: {
     RADIO_HEIGHT: number;
     RADIO_THICKNESS: number;
 };
-export { BASE };
-export default SIZES;
-//# sourceMappingURL=sizes.d.ts.map
+//# sourceMappingURL=staticSizes.d.ts.map

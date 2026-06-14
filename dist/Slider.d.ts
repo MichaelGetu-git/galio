@@ -14,6 +14,10 @@ interface SliderProps {
     onValueChange?: (value: number) => void;
     accessibilityLabel?: string;
     accessibilityHint?: string;
+    className?: string;
+    containerClassName?: string;
+    trackClassName?: string;
+    thumbClassName?: string;
 }
 declare const WrappedSlider: React.FC<SliderProps>;
 export default WrappedSlider;

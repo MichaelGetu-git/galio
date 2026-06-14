@@ -56,7 +56,7 @@ var getIconType_1 = __importDefault(require("./helpers/getIconType"));
 var theme_1 = require("./theme");
 var Galio = (0, vector_icons_1.createIconSetFromIcoMoon)(galio_json_1.default, 'Galio', require('./fonts/galio.ttf'));
 function Icon(_a) {
-    var name = _a.name, family = _a.family, size = _a.size, color = _a.color, style = _a.style, rest = __rest(_a, ["name", "family", "size", "color", "style"]);
+    var name = _a.name, family = _a.family, size = _a.size, color = _a.color, style = _a.style, className = _a.className, rest = __rest(_a, ["name", "family", "size", "color", "style", "className"]);
     var theme = (0, theme_1.useTheme)();
     var colors = (0, theme_1.useColors)();
     // Semantic size mapping to theme sizes

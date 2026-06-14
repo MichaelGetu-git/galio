@@ -70,7 +70,7 @@ function Checkbox(_a) {
     _h = _a.iconSize, // deprecated
     iconSize = _h === void 0 ? 15 : _h, // deprecated
     _j = _a.iconProps, // deprecated
-    iconProps = _j === void 0 ? {} : _j, controlledChecked = _a.checked, _k = _a.initialValue, initialValue = _k === void 0 ? false : _k, label = _a.label, labelStyle = _a.labelStyle, labelColor = _a.labelColor, _l = _a.onChange, onChange = _l === void 0 ? function () { } : _l, style = _a.style, accessibilityLabel = _a.accessibilityLabel, accessibilityHint = _a.accessibilityHint;
+    iconProps = _j === void 0 ? {} : _j, controlledChecked = _a.checked, _k = _a.initialValue, initialValue = _k === void 0 ? false : _k, label = _a.label, labelStyle = _a.labelStyle, labelColor = _a.labelColor, _l = _a.onChange, onChange = _l === void 0 ? function () { } : _l, style = _a.style, accessibilityLabel = _a.accessibilityLabel, accessibilityHint = _a.accessibilityHint, className = _a.className, labelClassName = _a.labelClassName, checkboxClassName = _a.checkboxClassName, imageClassName = _a.imageClassName;
     var theme = (0, theme_1.useTheme)();
     var colors = (0, theme_1.useColors)();
     // Support both controlled and uncontrolled modes

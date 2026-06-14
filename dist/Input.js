@@ -68,7 +68,7 @@ var Input = (0, react_1.forwardRef)(function (_a, ref) {
     _l = _a.iconSize, // legacy
     iconSize = _l === void 0 ? 16 : _l, // legacy
     _m = _a.iconProps, // legacy
-    iconProps = _m === void 0 ? {} : _m, _o = _a.topHelp, topHelp = _o === void 0 ? true : _o, _p = _a.bottomHelp, bottomHelp = _p === void 0 ? false : _p, iconContent = _a.iconContent, _q = _a.password, password = _q === void 0 ? false : _q, error = _a.error, onRef = _a.onRef, rest = __rest(_a, ["style", "textInputStyle", "type", "placeholderTextColor", "label", "labelStyles", "color", "help", "helpStyles", "bgColor", "borderless", "viewPass", "rounded", "icon", "family", "left", "right", "iconColor", "iconSize", "iconProps", "topHelp", "bottomHelp", "iconContent", "password", "error", "onRef"]);
+    iconProps = _m === void 0 ? {} : _m, _o = _a.topHelp, topHelp = _o === void 0 ? true : _o, _p = _a.bottomHelp, bottomHelp = _p === void 0 ? false : _p, iconContent = _a.iconContent, _q = _a.password, password = _q === void 0 ? false : _q, error = _a.error, className = _a.className, inputClassName = _a.inputClassName, labelClassName = _a.labelClassName, helpClassName = _a.helpClassName, onRef = _a.onRef, rest = __rest(_a, ["style", "textInputStyle", "type", "placeholderTextColor", "label", "labelStyles", "color", "help", "helpStyles", "bgColor", "borderless", "viewPass", "rounded", "icon", "family", "left", "right", "iconColor", "iconSize", "iconProps", "topHelp", "bottomHelp", "iconContent", "password", "error", "className", "inputClassName", "labelClassName", "helpClassName", "onRef"]);
     var theme = (0, theme_1.useTheme)();
     var colors = (0, theme_1.useColors)();
     var _r = (0, react_1.useState)(password), isPassword = _r[0], setIsPassword = _r[1];

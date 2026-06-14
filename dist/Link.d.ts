@@ -8,6 +8,8 @@ export interface LinkProps {
     color?: string;
     disabled?: boolean;
     activeOpacity?: number;
+    className?: string;
+    textClassName?: string;
 }
 export interface linkRef {
     press: () => void;

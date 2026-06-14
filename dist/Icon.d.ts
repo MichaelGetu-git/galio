@@ -7,8 +7,9 @@ export interface IconProps {
     color?: string;
     style?: any;
     [key: string]: any;
+    className?: string;
 }
-declare function Icon({ name, family, size, color, style, ...rest }: IconProps): JSX.Element | null;
+declare function Icon({ name, family, size, color, style, className, ...rest }: IconProps): JSX.Element | null;
 declare const WrappedIcon: React.MemoExoticComponent<typeof Icon>;
 export default WrappedIcon;
 //# sourceMappingURL=Icon.d.ts.map

@@ -16,7 +16,7 @@ var theme_1 = require("./theme");
 var interop_1 = require("./helpers/interop");
 function Avatar(_a) {
     var _b;
-    var source = _a.source, label = _a.label, labelColor = _a.labelColor, _c = _a.size, size = _c === void 0 ? 50 : _c, backgroundColor = _a.backgroundColor, labelFontSize = _a.labelFontSize, labelFontWeight = _a.labelFontWeight, imageProps = _a.imageProps, imageStyle = _a.imageStyle, containerStyle = _a.containerStyle, style = _a.style, labelStyle = _a.labelStyle, labelTextStyle = _a.labelTextStyle, accessibilityLabel = _a.accessibilityLabel, accessibilityHint = _a.accessibilityHint, shadow = _a.shadow;
+    var source = _a.source, label = _a.label, labelColor = _a.labelColor, _c = _a.size, size = _c === void 0 ? 50 : _c, backgroundColor = _a.backgroundColor, labelFontSize = _a.labelFontSize, labelFontWeight = _a.labelFontWeight, imageProps = _a.imageProps, imageStyle = _a.imageStyle, containerStyle = _a.containerStyle, style = _a.style, labelStyle = _a.labelStyle, labelTextStyle = _a.labelTextStyle, accessibilityLabel = _a.accessibilityLabel, accessibilityHint = _a.accessibilityHint, shadow = _a.shadow, className = _a.className, imageClassName = _a.imageClassName, containerClassName = _a.containerClassName, labelClassName = _a.labelClassName, labelTextClassName = _a.labelTextClassName;
     var theme = (0, theme_1.useTheme)();
     var colors = theme.colors;
     var avatarSize = size || 50;

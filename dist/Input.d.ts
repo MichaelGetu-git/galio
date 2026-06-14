@@ -57,6 +57,10 @@ export interface InputProps {
     keyboardType?: KeyboardTypeOptions;
     textContentType?: any;
     autoComplete?: any;
+    className?: string;
+    inputClassName?: string;
+    labelClassName?: string;
+    helpClassName?: string;
 }
 export interface InputRef {
     focus: () => void;

@@ -26,8 +26,12 @@ interface CardProps {
     rightSideComponent?: React.ReactNode;
     flex?: boolean;
     shadowColor?: string;
+    className?: string;
+    imageClassName?: string;
+    footerClassName?: string;
+    imageBlockClassName?: string;
 }
-declare function Card({ avatar, title, titleColor, caption, captionColor, location, locationColor, borderless, footerStyle, image, imageBlockStyle, imageStyle, children, card, shadow, style, neutral, fullBackgroundImage, authorImageSrc, authorTitle, authorSubTitle, onPress, rightSideComponent, flex, shadowColor, }: CardProps): JSX.Element;
+declare function Card({ avatar, title, titleColor, caption, captionColor, location, locationColor, borderless, footerStyle, image, imageBlockStyle, imageStyle, children, card, shadow, style, neutral, fullBackgroundImage, authorImageSrc, authorTitle, authorSubTitle, onPress, rightSideComponent, flex, shadowColor, className, imageClassName, footerClassName, imageBlockClassName }: CardProps): JSX.Element;
 declare const WrappedCard: typeof Card;
 export default WrappedCard;
 //# sourceMappingURL=Card.d.ts.map
