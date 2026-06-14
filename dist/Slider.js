@@ -35,72 +35,65 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(require("react"));
 var react_native_1 = require("react-native");
+var react_native_reanimated_1 = __importStar(require("react-native-reanimated"));
+var react_native_gesture_handler_1 = require("react-native-gesture-handler");
 var theme_1 = require("./theme");
 var Slider = function (_a) {
-    var _b = _a.value, value = _b === void 0 ? 0 : _b, _c = _a.minimumValue, minimumValue = _c === void 0 ? 0 : _c, _d = _a.maximumValue, maximumValue = _d === void 0 ? 1 : _d, _e = _a.step, step = _e === void 0 ? 0.01 : _e, onValueChange = _a.onValueChange, _f = _a.disabled, disabled = _f === void 0 ? false : _f, trackStyle = _a.trackStyle, activeColor = _a.activeColor, containerStyle = _a.containerStyle, thumbStyle = _a.thumbStyle, accessibilityLabel = _a.accessibilityLabel, accessibilityHint = _a.accessibilityHint;
+    var _b;
+    var _c = _a.value, value = _c === void 0 ? 0 : _c, _d = _a.minimumValue, minimumValue = _d === void 0 ? 0 : _d, _e = _a.maximumValue, maximumValue = _e === void 0 ? 1 : _e, _f = _a.step, step = _f === void 0 ? 0.01 : _f, onValueChange = _a.onValueChange, _g = _a.disabled, disabled = _g === void 0 ? false : _g, trackStyle = _a.trackStyle, activeColor = _a.activeColor, containerStyle = _a.containerStyle, thumbStyle = _a.thumbStyle, accessibilityLabel = _a.accessibilityLabel, accessibilityHint = _a.accessibilityHint;
     var theme = (0, theme_1.useTheme)();
     var colors = (0, theme_1.useColors)();
-    var _g = (0, react_1.useState)(0), containerWidth = _g[0], setContainerWidth = _g[1];
-    var trackWidth = (0, react_1.useRef)(0);
-    var thumbX = (0, react_1.useRef)(new react_native_1.Animated.Value(0)).current;
-    var currentValue = (0, react_1.useRef)(value);
-    var currentThumbPosition = (0, react_1.useRef)(0);
-    var trackLayout = (0, react_1.useRef)({ x: 0, y: 0, width: 0, height: 0 });
+    var _h = (0, react_1.useState)(0), containerWidth = _h[0], setContainerWidth = _h[1];
+    var trackWidth = (0, react_native_reanimated_1.useSharedValue)(0);
+    var thumbX = (0, react_native_reanimated_1.useSharedValue)(0);
+    var currentValue = (0, react_native_reanimated_1.useSharedValue)(value);
+    var currentThumbPosition = (0, react_native_reanimated_1.useSharedValue)(0);
     var valueToPosition = function (val) {
+        'worklet';
         var clamped = Math.max(minimumValue, Math.min(val, maximumValue));
         var ratio = (clamped - minimumValue) / (maximumValue - minimumValue);
-        return ratio * trackWidth.current;
+        return ratio * trackWidth.value;
     };
     var positionToValue = function (pos) {
-        var ratio = pos / trackWidth.current;
+        'worklet';
+        var ratio = pos / trackWidth.value;
         var rawValue = ratio * (maximumValue - minimumValue) + minimumValue;
         var steppedValue = step > 0 ? Math.round(rawValue / step) * step : rawValue;
         return Math.max(minimumValue, Math.min(steppedValue, maximumValue));
     };
     (0, react_1.useEffect)(function () {
         var pos = valueToPosition(value);
-        react_native_1.Animated.timing(thumbX, {
-            toValue: pos,
-            duration: 150,
-            useNativeDriver: false,
-        }).start();
-        currentThumbPosition.current = pos;
+        thumbX.value = (0, react_native_reanimated_1.withTiming)(pos, { duration: 150 });
+        currentThumbPosition.value = pos;
+        currentValue.value = value;
     }, [value]);
-    var panResponder = (0, react_1.useRef)(react_native_1.PanResponder.create({
-        onStartShouldSetPanResponder: function () { return !disabled; },
-        onMoveShouldSetPanResponder: function () { return !disabled; },
-        onPanResponderGrant: function (_, gestureState) {
-            var _a;
-            if (disabled)
-                return;
-            var relativeX = gestureState.x0 - trackLayout.current.x;
-            var thumbRadius = (((_a = theme === null || theme === void 0 ? void 0 : theme.sizes) === null || _a === void 0 ? void 0 : _a.THUMB_SIZE) || 25) / 2;
-            var clampedX = Math.max(thumbRadius, Math.min(relativeX, trackWidth.current - thumbRadius));
-            currentThumbPosition.current = clampedX;
-            thumbX.setValue(clampedX);
-        },
-        onPanResponderMove: function (_, gestureState) {
-            var _a;
-            if (disabled)
-                return;
-            var relativeX = gestureState.moveX - trackLayout.current.x;
-            var thumbRadius = (((_a = theme === null || theme === void 0 ? void 0 : theme.sizes) === null || _a === void 0 ? void 0 : _a.THUMB_SIZE) || 25) / 2;
-            var clampedX = Math.max(thumbRadius, Math.min(relativeX, trackWidth.current - thumbRadius));
-            currentThumbPosition.current = clampedX;
-            thumbX.setValue(clampedX);
-            var newValue = positionToValue(clampedX);
-            if (newValue !== currentValue.current) {
-                currentValue.current = newValue;
-                onValueChange === null || onValueChange === void 0 ? void 0 : onValueChange(newValue);
+    var thumbRadius = (((_b = theme === null || theme === void 0 ? void 0 : theme.sizes) === null || _b === void 0 ? void 0 : _b.THUMB_SIZE) || 25) / 2;
+    var panGesture = react_native_gesture_handler_1.Gesture.Pan()
+        .onStart(function (e) {
+        if (disabled)
+            return;
+        var clampedX = Math.max(thumbRadius, Math.min(e.x, trackWidth.value - thumbRadius));
+        currentThumbPosition.value = clampedX;
+        thumbX.value = clampedX;
+    })
+        .onUpdate(function (e) {
+        if (disabled)
+            return;
+        var clampedX = Math.max(thumbRadius, Math.min(e.x, trackWidth.value - thumbRadius));
+        currentThumbPosition.value = clampedX;
+        thumbX.value = clampedX;
+        var newValue = positionToValue(clampedX);
+        if (newValue !== currentValue.value) {
+            currentValue.value = newValue;
+            if (onValueChange) {
+                (0, react_native_reanimated_1.runOnJS)(onValueChange)(newValue);
             }
-        },
-        onPanResponderRelease: function () { },
-    })).current;
+        }
+    });
     var onTrackLayout = function (e) {
-        var _a = e.nativeEvent.layout, width = _a.width, x = _a.x, y = _a.y;
-        trackWidth.current = width;
-        trackLayout.current = { x: x, y: y, width: width, height: e.nativeEvent.layout.height };
-        thumbX.setValue(valueToPosition(currentValue.current));
+        var width = e.nativeEvent.layout.width;
+        trackWidth.value = width;
+        thumbX.value = valueToPosition(currentValue.value);
     };
     var handleContainerLayout = function (event) {
         var width = event.nativeEvent.layout.width;
@@ -110,16 +103,24 @@ var Slider = function (_a) {
     var resolvedActiveColor = activeColor
         ? colors[activeColor] || activeColor
         : colors.primary;
+    var animatedThumbStyle = (0, react_native_reanimated_1.useAnimatedStyle)(function () { return ({
+        transform: [{ translateX: thumbX.value }],
+    }); });
+    var animatedActiveTrackStyle = (0, react_native_reanimated_1.useAnimatedStyle)(function () { return ({
+        width: thumbX.value,
+    }); });
     return (<react_native_1.View style={[styles(theme, colors).container, containerStyle]} onLayout={handleContainerLayout}>
       <react_native_1.View onLayout={onTrackLayout} style={[styles(theme, colors).track, trackStyle]}/>
-      <react_native_1.View style={[styles(theme, colors).activeTrack, { width: trackWidth.current, backgroundColor: resolvedActiveColor }]}>
-        <react_native_1.Animated.View style={[
+      <react_native_reanimated_1.default.View style={[styles(theme, colors).activeTrack, { backgroundColor: resolvedActiveColor }, animatedActiveTrackStyle]}>
+        <react_native_gesture_handler_1.GestureDetector gesture={panGesture}>
+          <react_native_reanimated_1.default.View style={[
             styles(theme, colors).thumb,
             thumbStyle,
             disabled && styles(theme, colors).disabled,
-            { transform: [{ translateX: thumbX }] },
-        ]} {...panResponder.panHandlers}/>
-      </react_native_1.View>
+            animatedThumbStyle,
+        ]}/>
+        </react_native_gesture_handler_1.GestureDetector>
+      </react_native_reanimated_1.default.View>
     </react_native_1.View>);
 };
 var styles = function (theme, colors) {

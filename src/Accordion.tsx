@@ -1,4 +1,5 @@
-import { Animated, FlatList, StyleSheet, TouchableWithoutFeedback, ViewStyle, TextStyle, Pressable, View } from "react-native";
+import { FlatList, StyleSheet, TouchableWithoutFeedback, ViewStyle, TextStyle, Pressable, View } from "react-native";
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { useEffect, useState, type JSX } from "react";
 import { Dimensions, Platform } from "react-native";
 import Text from "./Text";
@@ -93,18 +94,18 @@ interface AccordionAnimationProps {
 }
 
 function AccordionAnimation({ children, style }: AccordionAnimationProps): JSX.Element {
-    const [fade] = useState(new Animated.Value(0.3));
+    const fade = useSharedValue(0.3);
 
     useEffect(() => {
-        Animated.timing(fade, {
-            toValue: 1,
-            duration: 400,
-            useNativeDriver: true
-        }).start();
+        fade.value = withTiming(1, { duration: 400 });
     }, [fade]);
 
+    const animatedStyle = useAnimatedStyle(() => ({
+        opacity: fade.value
+    }));
+
     return (
-        <Animated.View style={{ ...style, opacity: fade }}>
+        <Animated.View style={[style, animatedStyle]}>
             {children}
         </Animated.View>
     );

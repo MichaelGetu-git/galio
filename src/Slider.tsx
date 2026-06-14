@@ -1,12 +1,12 @@
 import React, { useRef, useEffect, useState } from 'react';
 import {
   View,
-  Animated,
-  PanResponder,
   StyleSheet,
   LayoutChangeEvent,
   ViewStyle,
 } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, runOnJS } from 'react-native-reanimated';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { useTheme, useColors } from './theme';
 
 interface SliderProps {
@@ -41,20 +41,21 @@ const Slider: React.FC<SliderProps> = ({
   const theme = useTheme();
   const colors = useColors();
   const [containerWidth, setContainerWidth] = useState(0);
-  const trackWidth = useRef(0);
-  const thumbX = useRef(new Animated.Value(0)).current;
-  const currentValue = useRef(value);
-  const currentThumbPosition = useRef(0);
-  const trackLayout = useRef({ x: 0, y: 0, width: 0, height: 0 });
+  const trackWidth = useSharedValue(0);
+  const thumbX = useSharedValue(0);
+  const currentValue = useSharedValue(value);
+  const currentThumbPosition = useSharedValue(0);
 
   const valueToPosition = (val: number) => {
+    'worklet';
     const clamped = Math.max(minimumValue, Math.min(val, maximumValue));
     const ratio = (clamped - minimumValue) / (maximumValue - minimumValue);
-    return ratio * trackWidth.current;
+    return ratio * trackWidth.value;
   };
 
   const positionToValue = (pos: number) => {
-    const ratio = pos / trackWidth.current;
+    'worklet';
+    const ratio = pos / trackWidth.value;
     const rawValue = ratio * (maximumValue - minimumValue) + minimumValue;
     const steppedValue = step > 0 ? Math.round(rawValue / step) * step : rawValue;
     return Math.max(minimumValue, Math.min(steppedValue, maximumValue));
@@ -62,48 +63,38 @@ const Slider: React.FC<SliderProps> = ({
 
   useEffect(() => {
     const pos = valueToPosition(value);
-    Animated.timing(thumbX, {
-      toValue: pos,
-      duration: 150,
-      useNativeDriver: false,
-    }).start();
-    currentThumbPosition.current = pos;
+    thumbX.value = withTiming(pos, { duration: 150 });
+    currentThumbPosition.value = pos;
+    currentValue.value = value;
   }, [value]);
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => !disabled,
-      onMoveShouldSetPanResponder: () => !disabled,
-      onPanResponderGrant: (_, gestureState) => {
-        if (disabled) return;
-        const relativeX = gestureState.x0 - trackLayout.current.x;
-        const thumbRadius = (theme?.sizes?.THUMB_SIZE || 25) / 2;
-        const clampedX = Math.max(thumbRadius, Math.min(relativeX, trackWidth.current - thumbRadius));
-        currentThumbPosition.current = clampedX;
-        thumbX.setValue(clampedX);
-      },
-      onPanResponderMove: (_, gestureState) => {
-        if (disabled) return;
-        const relativeX = gestureState.moveX - trackLayout.current.x;
-        const thumbRadius = (theme?.sizes?.THUMB_SIZE || 25) / 2;
-        const clampedX = Math.max(thumbRadius, Math.min(relativeX, trackWidth.current - thumbRadius));
-        currentThumbPosition.current = clampedX;
-        thumbX.setValue(clampedX);
-        const newValue = positionToValue(clampedX);
-        if (newValue !== currentValue.current) {
-          currentValue.current = newValue;
-          onValueChange?.(newValue);
-        }
-      },
-      onPanResponderRelease: () => {},
+  const thumbRadius = (theme?.sizes?.THUMB_SIZE || 25) / 2;
+
+  const panGesture = Gesture.Pan()
+    .onStart((e) => {
+      if (disabled) return;
+      const clampedX = Math.max(thumbRadius, Math.min(e.x, trackWidth.value - thumbRadius));
+      currentThumbPosition.value = clampedX;
+      thumbX.value = clampedX;
     })
-  ).current;
+    .onUpdate((e) => {
+      if (disabled) return;
+      const clampedX = Math.max(thumbRadius, Math.min(e.x, trackWidth.value - thumbRadius));
+      currentThumbPosition.value = clampedX;
+      thumbX.value = clampedX;
+      const newValue = positionToValue(clampedX);
+      if (newValue !== currentValue.value) {
+        currentValue.value = newValue;
+        if (onValueChange) {
+          runOnJS(onValueChange)(newValue);
+        }
+      }
+    });
 
   const onTrackLayout = (e: LayoutChangeEvent) => {
-    const { width, x, y } = e.nativeEvent.layout;
-    trackWidth.current = width;
-    trackLayout.current = { x, y, width, height: e.nativeEvent.layout.height };
-    thumbX.setValue(valueToPosition(currentValue.current));
+    const { width } = e.nativeEvent.layout;
+    trackWidth.value = width;
+    thumbX.value = valueToPosition(currentValue.value);
   };
 
   const handleContainerLayout = (event: LayoutChangeEvent) => {
@@ -116,6 +107,14 @@ const Slider: React.FC<SliderProps> = ({
     ? colors[activeColor as keyof typeof colors] || activeColor
     : colors.primary;
 
+  const animatedThumbStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: thumbX.value }],
+  }));
+
+  const animatedActiveTrackStyle = useAnimatedStyle(() => ({
+    width: thumbX.value,
+  }));
+
   return (
     <View
       style={[styles(theme, colors).container, containerStyle]}
@@ -125,19 +124,20 @@ const Slider: React.FC<SliderProps> = ({
         onLayout={onTrackLayout}
         style={[styles(theme, colors).track, trackStyle]}
       />
-      <View
-        style={[styles(theme, colors).activeTrack, { width: trackWidth.current, backgroundColor: resolvedActiveColor }]}
+      <Animated.View
+        style={[styles(theme, colors).activeTrack, { backgroundColor: resolvedActiveColor }, animatedActiveTrackStyle]}
       >
-        <Animated.View
-          style={[
-            styles(theme, colors).thumb,
-            thumbStyle,
-            disabled && styles(theme, colors).disabled,
-            { transform: [{ translateX: thumbX }] },
-          ]}
-          {...panResponder.panHandlers}
-        />
-      </View>
+        <GestureDetector gesture={panGesture}>
+          <Animated.View
+            style={[
+              styles(theme, colors).thumb,
+              thumbStyle,
+              disabled && styles(theme, colors).disabled,
+              animatedThumbStyle,
+            ]}
+          />
+        </GestureDetector>
+      </Animated.View>
     </View>
   );
 };
