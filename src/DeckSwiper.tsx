@@ -1,5 +1,7 @@
 import { JSX, useEffect, useState, useMemo, useCallback } from "react";
-import { Animated, Dimensions, PanResponder, StyleSheet, ViewStyle, StyleProp } from "react-native";
+import { Dimensions, StyleSheet, ViewStyle, StyleProp } from "react-native";
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, interpolate, Extrapolation, runOnJS } from 'react-native-reanimated';
 import { useTheme, useColors } from "./theme";
 import Block from "./Block";
 
@@ -43,38 +45,45 @@ function DeckSwiper({
     const theme = useTheme();
     const colors = useColors();
     const [currentIndex, setCurrentIndex] = useState(0);
-    const position = useMemo(() => new Animated.ValueXY(), []);
+    const translateX = useSharedValue(0);
+    const translateY = useSharedValue(0);
 
-    const rotate = useMemo(() => position.x.interpolate({
-        inputRange: [-cardWidth / 2, 0, cardWidth / 2],
-        outputRange: ["-10deg", "0deg", "10deg"],
-        extrapolate: "clamp"
-    }), [position.x, cardWidth]);
-    
-    const rotateAndTranslate = useMemo(() => ({
-        transform: [
-            { rotate },
-            ...position.getTranslateTransform()
-        ]
-    }), [rotate, position]);
-    
-    const nextCardOpacity = useMemo(() => position.x.interpolate({
-        inputRange: [-cardWidth / 2, 0, cardWidth / 2],
-        outputRange: [1, 0, 1],
-        extrapolate: "clamp"
-    }), [position.x, cardWidth]);
-    
-    const nextCardScale = useMemo(() => position.x.interpolate({
-        inputRange: [-cardWidth / 2, 0, cardWidth / 2],
-        outputRange: [1, 0.8, 1],
-        extrapolate: "clamp"
-    }), [position.x, cardWidth]);
+    const rotateAndTranslate = useAnimatedStyle(() => {
+        const rotate = interpolate(
+            translateX.value,
+            [-cardWidth / 2, 0, cardWidth / 2],
+            [-10, 0, 10],
+            Extrapolation.CLAMP
+        ) + 'deg';
+        
+        return {
+            transform: [
+                { rotate },
+                { translateX: translateX.value },
+                { translateY: translateY.value }
+            ]
+        };
+    });
 
-    const nextCardAnimatedStyle = useMemo(() => ({
-        opacity: nextCardOpacity,
-        transform: [{ scale: nextCardScale }],
-        ...StyleSheet.absoluteFillObject
-    }), [nextCardOpacity, nextCardScale]);
+    const nextCardAnimatedStyle = useAnimatedStyle(() => {
+        const opacity = interpolate(
+            translateX.value,
+            [-cardWidth / 2, 0, cardWidth / 2],
+            [1, 0, 1],
+            Extrapolation.CLAMP
+        );
+        const scale = interpolate(
+            translateX.value,
+            [-cardWidth / 2, 0, cardWidth / 2],
+            [1, 0.8, 1],
+            Extrapolation.CLAMP
+        );
+        return {
+            opacity,
+            transform: [{ scale }],
+            ...StyleSheet.absoluteFillObject
+        };
+    });
 
     const handleSwipeRight = useCallback(() => {
         if (currentIndex < components.length - 1) {
@@ -90,35 +99,32 @@ function DeckSwiper({
         }
     }, [currentIndex, components.length, onSwipeLeft]);
 
-    const panResponder = useMemo(() => PanResponder.create({
-        onStartShouldSetPanResponder: () => true,
-        onPanResponderMove: (_, gestureState) => {
-            position.setValue({ x: gestureState.dx, y: gestureState.dy });
-        },
-        onPanResponderRelease: (_, gestureState) => {
-            if (gestureState.dx > swipeThreshold) {
-                Animated.spring(position, {
-                    toValue: { x: cardWidth + 100, y: gestureState.dy },
-                    useNativeDriver: false
-                }).start(handleSwipeRight);
-            } else if (gestureState.dx < -swipeThreshold) {
-                Animated.spring(position, {
-                    toValue: { x: -cardWidth - 100, y: gestureState.dy },
-                    useNativeDriver: false
-                }).start(handleSwipeLeft);
+    const panGesture = useMemo(() => Gesture.Pan()
+        .onUpdate((event) => {
+            translateX.value = event.translationX;
+            translateY.value = event.translationY;
+        })
+        .onEnd((event) => {
+            if (event.translationX > swipeThreshold) {
+                translateX.value = withSpring(cardWidth + 100, undefined, (isFinished) => {
+                    if (isFinished) runOnJS(handleSwipeRight)();
+                });
+                translateY.value = withSpring(event.translationY);
+            } else if (event.translationX < -swipeThreshold) {
+                translateX.value = withSpring(-cardWidth - 100, undefined, (isFinished) => {
+                    if (isFinished) runOnJS(handleSwipeLeft)();
+                });
+                translateY.value = withSpring(event.translationY);
             } else {
-                Animated.spring(position, {
-                    toValue: { x: 0, y: 0 },
-                    friction: 4,
-                    useNativeDriver: false
-                }).start();
+                translateX.value = withSpring(0, { damping: 10 });
+                translateY.value = withSpring(0, { damping: 10 });
             }
-        },
-    }), [position, swipeThreshold, cardWidth, handleSwipeRight, handleSwipeLeft]);
+        }), [swipeThreshold, cardWidth, handleSwipeRight, handleSwipeLeft]);
 
     useEffect(() => {
-        position.setValue({ x: 0, y: 0 });
-    }, [currentIndex, position]);
+        translateX.value = 0;
+        translateY.value = 0;
+    }, [currentIndex]);
 
     const renderComponents = useCallback((componentsArray: React.ReactNode[]) => {
         return componentsArray.map((item, i) => {
@@ -126,23 +132,23 @@ function DeckSwiper({
                 return null;
             } else if (i === currentIndex) {
                 return (
-                    <Animated.View
-                        key={i}
-                        style={[
-                            rotateAndTranslate,
-                            StyleSheet.absoluteFillObject,
-                            {
-                                backgroundColor: cardBackgroundColor || colors.surface,
-                                borderRadius: borderRadius ?? theme.sizes.CARD_BORDER_RADIUS,
-                                ...(typeof cardShadow === 'string' ? theme.shadows[cardShadow] : cardShadow),
-                            },
-                            cardContainerStyle,
-                            focusedElementStyle,
-                        ]}
-                        {...panResponder.panHandlers}
-                    >
-                        {item}
-                    </Animated.View>
+                    <GestureDetector key={i} gesture={panGesture}>
+                        <Animated.View
+                            style={[
+                                rotateAndTranslate,
+                                StyleSheet.absoluteFillObject,
+                                {
+                                    backgroundColor: cardBackgroundColor || colors.surface,
+                                    borderRadius: borderRadius ?? theme.sizes.CARD_BORDER_RADIUS,
+                                    ...(typeof cardShadow === 'string' ? theme.shadows[cardShadow] : cardShadow),
+                                },
+                                cardContainerStyle,
+                                focusedElementStyle,
+                            ]}
+                        >
+                            {item}
+                        </Animated.View>
+                    </GestureDetector>
                 );
             } else if (showNextCard && i === currentIndex + 1) {
                 return (
@@ -165,7 +171,7 @@ function DeckSwiper({
                 return null;
             }
         }).reverse();
-    }, [currentIndex, rotateAndTranslate, focusedElementStyle, nextCardAnimatedStyle, cardBackgroundColor, nextCardBackgroundColor, cardShadow, nextCardShadow, cardContainerStyle, nextElementStyle, borderRadius, theme, colors, showNextCard, panResponder.panHandlers]);
+    }, [currentIndex, rotateAndTranslate, focusedElementStyle, nextCardAnimatedStyle, cardBackgroundColor, nextCardBackgroundColor, cardShadow, nextCardShadow, cardContainerStyle, nextElementStyle, borderRadius, theme, colors, showNextCard, panGesture]);
 
     useEffect(() => {
         setCurrentIndex(0);

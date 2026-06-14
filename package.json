@@ -39,7 +39,9 @@
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
     "@react-native-vector-icons/fontisto": "^12.3.0",
-    "opencollective-postinstall": "^2.0.3"
+    "opencollective-postinstall": "^2.0.3",
+    "react-native-gesture-handler": "^3.0.0",
+    "react-native-reanimated": "^4.4.1"
   },
   "devDependencies": {
     "@types/react": "^19.2.2",

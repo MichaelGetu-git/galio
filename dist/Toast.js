@@ -38,6 +38,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(require("react"));
 var react_native_1 = require("react-native");
+var react_native_reanimated_1 = __importStar(require("react-native-reanimated"));
 var theme_1 = require("./theme");
 var Text_1 = __importDefault(require("./Text"));
 var _a = react_native_1.Dimensions.get('screen'), height = _a.height, width = _a.width;
@@ -46,9 +47,7 @@ function Toast(_a) {
     var theme = (0, theme_1.useTheme)();
     var colors = (0, theme_1.useColors)();
     var _h = (0, react_1.useState)(isShow), internalIsShow = _h[0], setInternalIsShow = _h[1];
-    var _j = (0, react_1.useState)(0), opacity = _j[0], setOpacity = _j[1];
-    var fadeAnim = (0, react_1.useRef)(new react_native_1.Animated.Value(0)).current;
-    var animationRef = (0, react_1.useRef)(null);
+    var opacity = (0, react_native_reanimated_1.useSharedValue)(0);
     var timeoutRef = (0, react_1.useRef)(null);
     var getThemeColor = function (colorName) {
         if (!colorName)
@@ -82,21 +81,11 @@ function Toast(_a) {
     (0, react_1.useEffect)(function () {
         if (isShow && !internalIsShow) {
             setInternalIsShow(true);
-            setOpacity(1);
-            animationRef.current = react_native_1.Animated.timing(fadeAnim, {
-                toValue: 1,
-                duration: fadeInDuration,
-                useNativeDriver: false,
-            });
+            opacity.value = (0, react_native_reanimated_1.withTiming)(1, { duration: fadeInDuration });
         }
         if (!isShow && internalIsShow) {
             console.log('Hiding toast');
-            setOpacity(0); // Set opacity immediately for fallback
-            animationRef.current = react_native_1.Animated.timing(fadeAnim, {
-                toValue: 0,
-                duration: fadeOutDuration,
-                useNativeDriver: false,
-            });
+            opacity.value = (0, react_native_reanimated_1.withTiming)(0, { duration: fadeOutDuration });
             timeoutRef.current = setTimeout(function () {
                 setInternalIsShow(false);
             }, fadeOutDuration);
@@ -105,11 +94,8 @@ function Toast(_a) {
             if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
             }
-            if (animationRef.current) {
-                animationRef.current.stop();
-            }
         };
-    }, [isShow, internalIsShow, fadeInDuration, fadeOutDuration, fadeAnim]);
+    }, [isShow, internalIsShow, fadeInDuration, fadeOutDuration]);
     var renderContent = function () {
         if (typeof children === 'string') {
             return <Text_1.default style={[styles(theme, colors).text, textStyle]}>{children}</Text_1.default>;
@@ -119,12 +105,14 @@ function Toast(_a) {
     var backgroundColor = getThemeColor(color);
     var borderRadius = round ? theme.sizes.BASE * 2 : theme.sizes.BASE;
     var topPosition = getTopPosition();
+    var animatedStyle = (0, react_native_reanimated_1.useAnimatedStyle)(function () { return ({
+        opacity: opacity.value,
+    }); });
     var toastStyles = [
         styles(theme, colors).toast,
         {
             backgroundColor: backgroundColor,
             top: topPosition,
-            opacity: opacity,
             borderRadius: borderRadius,
             borderColor: colors.border || 'rgba(255,255,255,0.3)',
             shadowColor: colors.black,
@@ -132,9 +120,9 @@ function Toast(_a) {
         style,
     ];
     return (<react_native_1.View style={styles(theme, colors).overlay} pointerEvents="none">
-            <react_native_1.Animated.View style={toastStyles}>
+            <react_native_reanimated_1.default.View style={[toastStyles, animatedStyle]}>
                 {renderContent()}
-            </react_native_1.Animated.View>
+            </react_native_reanimated_1.default.View>
         </react_native_1.View>);
 }
 var styles = function (theme, colors) {
