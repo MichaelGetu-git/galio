@@ -3,6 +3,8 @@ import { Dimensions, StyleSheet, View } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { useTheme, useColors } from './theme';
 import Text from './Text';
+import { registerInterop } from './helpers/interop';    
+
 
 const { height, width } = Dimensions.get('screen');
 
@@ -17,6 +19,9 @@ interface ToastProps {
     round?: boolean;
     style?: any;
     textStyle?: any;
+
+    className?:string;
+    textClassName?:string;
 }
 
 function Toast({
@@ -30,6 +35,8 @@ function Toast({
     round = false,
     style,
     textStyle,
+    className,
+    textClassName
 }: ToastProps) {
     const theme = useTheme();
     const colors = useColors();
@@ -160,4 +167,8 @@ const styles = (theme: ReturnType<typeof useTheme>, colors: ReturnType<typeof us
         },
     });
 
-export default Toast;
+const WrappedToast=registerInterop(Toast,{
+    className: 'style',
+    textClassName: 'textStyle',
+})
+export default WrappedToast;

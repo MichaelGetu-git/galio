@@ -4,6 +4,8 @@ import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring, interpolate, Extrapolation, runOnJS } from 'react-native-reanimated';
 import { useTheme, useColors } from "./theme";
 import Block from "./Block";
+import { registerInterop } from './helpers/interop';    
+
 
 const { width: SCREEN_WIDTH } = Dimensions.get('screen');
 
@@ -23,6 +25,12 @@ interface DeckSwiperProps {
     nextCardShadow?: keyof ReturnType<typeof useTheme>["shadows"] | ViewStyle;
     borderRadius?: number;
     showNextCard?: boolean;
+    
+    className?:string;
+    focusedElementClassName?:string;
+    nextElementClassName?:string;
+    cardContainerClassName?:string;
+
 }
 
 function DeckSwiper({
@@ -41,6 +49,11 @@ function DeckSwiper({
     nextCardShadow = 'sm',
     borderRadius,
     showNextCard = true,
+    
+    className,
+    focusedElementClassName,
+    nextElementClassName,
+    cardContainerClassName
 }: DeckSwiperProps): JSX.Element {
     const theme = useTheme();
     const colors = useColors();
@@ -193,4 +206,10 @@ function DeckSwiper({
     );
 }
 
-export default DeckSwiper;
+const WrappedDeckSwiper=registerInterop(DeckSwiper,{
+    className: 'style',
+    focusedElementClassName: 'focusedElementStyle',
+    nextElementClassName: 'nextElementStyle',
+    cardContainerClassName: 'cardContainerStyle',
+})
+export default WrappedDeckSwiper;

@@ -6,15 +6,20 @@ import Text from "./Text";
 import Block from "./Block";
 import Icon from "./Icon";
 import { useTheme, useColors } from "./theme";
+import { registerInterop } from './helpers/interop';    
+
 
 const { width } = Dimensions.get('screen');
 
 interface AccordionContentProps {
     content: string;
     contentStyle?: TextStyle;
+
+    className?:string
+    contentClassName?:string;
 }
 
-function AccordionContent({ content, contentStyle }: AccordionContentProps): JSX.Element {
+function AccordionContent({ content, contentStyle,className, contentClassName }: AccordionContentProps): JSX.Element {
     const theme = useTheme();
     const colors = useColors();
     return <Text style={[styles(theme, colors).content, contentStyle]}>{content}</Text>;
@@ -325,4 +330,9 @@ const styles = (theme: ReturnType<typeof useTheme>, colors: ReturnType<typeof us
     });
 };
 
-export default Accordion;
+const WrappedAccordion=registerInterop(Accordion,{
+    className:'contentStyle',
+    contentClassName:'contentStyle',
+})
+
+export default WrappedAccordion;
