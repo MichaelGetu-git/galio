@@ -135,5 +135,62 @@ import Button from 'galio-be/src/Button';
 - For accessibility/testing, use `accessibilityLabel` and `testID`.
 
 ---
+## NativeWind / Tailwind (optional)
+
+Galio supports [NativeWind](https://www.nativewind.dev/) v4 when it is installed in your app. Tailwind `className` props are converted to the same style props documented above — use `className`, `style`, or both together.
+
+### Setup
+
+```bash
+npm install nativewind tailwindcss
+```
+
+```js
+// tailwind.config.js
+module.exports = {
+  content: ['./App.{js,jsx,ts,tsx}', './src/**/*.{js,jsx,ts,tsx}'],
+  presets: [
+    require('nativewind/preset'),
+    require('../galio-tailwind-preset'), // adjust path to your project
+  ],
+};
+```
+
+NativeWind is optional — Galio works without it.
+
+### Galio tokens in Tailwind
+
+| Tailwind class | Galio source |
+|----------------|--------------|
+| `bg-galio-primary` | `colors.primary` |
+| `text-galio-text` | `colors.text` |
+| `border-galio-border` | `colors.border` |
+| `rounded-galio-card` | `sizes.CARD_BORDER_RADIUS` |
+| `rounded-galio-input` | `sizes.INPUT_BORDER_RADIUS` |
+| `h-galio-btn-h` | `sizes.BUTTON_HEIGHT` |
+| `p-galio-base` | `sizes.BASE` |
+| `text-galio-body` | Typography size |
+
+Component props such as `color`, `size`, and `shadow` still use Galio's API. Tailwind is best for layout, spacing, and visual overrides.
+
+### className mapping
+
+| Prop | Maps to |
+|------|---------|
+| `className` | `style` (Pressable) |
+| `textClassName` | `textStyle` (label text) |
+
+### Example
+
+```tsx
+<Button
+  color="primary"
+  className="rounded-galio-rounded h-galio-btn-h"
+  textClassName="text-galio-white text-galio-body uppercase"
+  onPress={() => {}}
+>
+  Confirm
+</Button>
+```
 
 For more, see the source or ask for advanced usage!

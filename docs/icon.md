@@ -55,3 +55,22 @@ import Icon from 'galio-framework/Icon';
 - If `color` matches a theme key, the theme color is used. Otherwise, the value is used as a color string.
 - If `size` is a string, it uses the mapped theme size. If a number, it is used directly.
 - Pass any additional props (e.g., `onPress`, `testID`) as needed.
+## NativeWind / Tailwind (optional)
+
+Galio supports [NativeWind](https://www.nativewind.dev/) v4 when it is installed in your app. Tailwind `className` props are converted to the same style props documented above — use `className`, `style`, or both together.
+
+Requires NativeWind v4 and the Galio Tailwind preset in your app's `tailwind.config.js` (`nativewind/preset` + `galio-tailwind-preset`). See [Button docs](./button.md#nativewind--tailwind-optional) for full setup and token reference.
+
+### className mapping
+
+| Prop | Maps to |
+|------|---------|
+| `className` | `style` |
+
+### Example
+
+```tsx
+<Icon name="heart" family="AntDesign" className="text-galio-error" size="md" />
+```
+
+For font-based icons, set color with Tailwind `text-*` classes. The `color` prop still works and accepts theme keys.

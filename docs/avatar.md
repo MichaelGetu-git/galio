@@ -80,4 +80,31 @@ Set accessibility labels and hints for better screen reader support:
 The avatar automatically adapts to your theme (light/dark) and uses semantic colors and shadows from your theme provider. You can override any value via props for full control.
 
 ---
+## NativeWind / Tailwind (optional)
+
+Galio supports [NativeWind](https://www.nativewind.dev/) v4 when it is installed in your app. Tailwind `className` props are converted to the same style props documented above — use `className`, `style`, or both together.
+
+Requires NativeWind v4 and the Galio Tailwind preset in your app's `tailwind.config.js` (`nativewind/preset` + `galio-tailwind-preset`). See [Button docs](./button.md#nativewind--tailwind-optional) for full setup and token reference.
+
+### className mapping
+
+| Prop | Maps to |
+|------|---------|
+| `className` | `style` (outermost View) |
+| `containerClassName` | `containerStyle` |
+| `imageClassName` | `imageStyle` |
+| `labelClassName` | `labelStyle` |
+| `labelTextClassName` | `labelTextStyle` |
+
+### Example
+
+```tsx
+<Avatar
+  label="AB"
+  size={64}
+  containerClassName="border-2 border-galio-primary"
+  labelTextClassName="text-galio-white text-galio-body font-bold"
+/>
+```
+
 For more advanced usage, see the source code or ask for specific examples.

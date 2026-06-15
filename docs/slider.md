@@ -71,5 +71,32 @@ import Slider from 'galio-be/src/Slider';
 - Always provide `accessibilityLabel` and `accessibilityHint` for better screen reader support.
 
 ---
+## NativeWind / Tailwind (optional)
+
+Galio supports [NativeWind](https://www.nativewind.dev/) v4 when it is installed in your app. Tailwind `className` props are converted to the same style props documented above — use `className`, `style`, or both together.
+
+Requires NativeWind v4 and the Galio Tailwind preset in your app's `tailwind.config.js` (`nativewind/preset` + `galio-tailwind-preset`). See [Button docs](./button.md#nativewind--tailwind-optional) for full setup and token reference.
+
+### className mapping
+
+| Prop | Maps to |
+|------|---------|
+| `className` | `containerStyle` |
+| `containerClassName` | `containerStyle` (alias) |
+| `trackClassName` | `trackStyle` |
+| `thumbClassName` | `thumbStyle` |
+
+### Example
+
+```tsx
+<Slider
+  value={0.5}
+  activeColor="primary"
+  trackClassName="h-1 rounded-full bg-galio-surfaceVariant"
+  thumbClassName="w-6 h-6 rounded-full bg-galio-primary"
+  containerClassName="mx-galio-base"
+/>
+```
+
 
 For more details, see the [theme documentation](./theme.md) and other component docs.
