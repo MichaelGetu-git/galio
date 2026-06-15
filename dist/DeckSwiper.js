@@ -10,6 +10,39 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
         if (ar || !(i in from)) {
@@ -25,36 +58,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = require("react");
 var react_native_1 = require("react-native");
+var react_native_gesture_handler_1 = require("react-native-gesture-handler");
+var react_native_reanimated_1 = __importStar(require("react-native-reanimated"));
 var theme_1 = require("./theme");
 var Block_1 = __importDefault(require("./Block"));
+var interop_1 = require("./helpers/interop");
 var SCREEN_WIDTH = react_native_1.Dimensions.get('screen').width;
 function DeckSwiper(_a) {
     var onSwipeRight = _a.onSwipeRight, onSwipeLeft = _a.onSwipeLeft, _b = _a.focusedElementStyle, focusedElementStyle = _b === void 0 ? {} : _b, _c = _a.nextElementStyle, nextElementStyle = _c === void 0 ? {} : _c, components = _a.components, style = _a.style, _d = _a.swipeThreshold, swipeThreshold = _d === void 0 ? 110 : _d, _e = _a.cardWidth, cardWidth = _e === void 0 ? SCREEN_WIDTH * 0.7 : _e, _f = _a.cardContainerStyle, cardContainerStyle = _f === void 0 ? {} : _f, _g = _a.cardShadow, cardShadow = _g === void 0 ? 'md' : _g, cardBackgroundColor = _a.cardBackgroundColor, nextCardBackgroundColor = _a.nextCardBackgroundColor, _h = _a.nextCardShadow, nextCardShadow = _h === void 0 ? 'sm' : _h, borderRadius = _a.borderRadius, _j = _a.showNextCard, showNextCard = _j === void 0 ? true : _j;
     var theme = (0, theme_1.useTheme)();
     var colors = (0, theme_1.useColors)();
     var _k = (0, react_1.useState)(0), currentIndex = _k[0], setCurrentIndex = _k[1];
-    var position = (0, react_1.useMemo)(function () { return new react_native_1.Animated.ValueXY(); }, []);
-    var rotate = (0, react_1.useMemo)(function () { return position.x.interpolate({
-        inputRange: [-cardWidth / 2, 0, cardWidth / 2],
-        outputRange: ["-10deg", "0deg", "10deg"],
-        extrapolate: "clamp"
-    }); }, [position.x, cardWidth]);
-    var rotateAndTranslate = (0, react_1.useMemo)(function () { return ({
-        transform: __spreadArray([
-            { rotate: rotate }
-        ], position.getTranslateTransform(), true)
-    }); }, [rotate, position]);
-    var nextCardOpacity = (0, react_1.useMemo)(function () { return position.x.interpolate({
-        inputRange: [-cardWidth / 2, 0, cardWidth / 2],
-        outputRange: [1, 0, 1],
-        extrapolate: "clamp"
-    }); }, [position.x, cardWidth]);
-    var nextCardScale = (0, react_1.useMemo)(function () { return position.x.interpolate({
-        inputRange: [-cardWidth / 2, 0, cardWidth / 2],
-        outputRange: [1, 0.8, 1],
-        extrapolate: "clamp"
-    }); }, [position.x, cardWidth]);
-    var nextCardAnimatedStyle = (0, react_1.useMemo)(function () { return (__assign({ opacity: nextCardOpacity, transform: [{ scale: nextCardScale }] }, react_native_1.StyleSheet.absoluteFillObject)); }, [nextCardOpacity, nextCardScale]);
+    var translateX = (0, react_native_reanimated_1.useSharedValue)(0);
+    var translateY = (0, react_native_reanimated_1.useSharedValue)(0);
     var handleSwipeRight = (0, react_1.useCallback)(function () {
         if (currentIndex < components.length - 1) {
             setCurrentIndex(function (prev) { return prev + 1; });
@@ -67,76 +83,114 @@ function DeckSwiper(_a) {
             onSwipeLeft === null || onSwipeLeft === void 0 ? void 0 : onSwipeLeft();
         }
     }, [currentIndex, components.length, onSwipeLeft]);
-    var panResponder = (0, react_1.useMemo)(function () { return react_native_1.PanResponder.create({
-        onStartShouldSetPanResponder: function () { return true; },
-        onPanResponderMove: function (_, gestureState) {
-            position.setValue({ x: gestureState.dx, y: gestureState.dy });
-        },
-        onPanResponderRelease: function (_, gestureState) {
-            if (gestureState.dx > swipeThreshold) {
-                react_native_1.Animated.spring(position, {
-                    toValue: { x: cardWidth + 100, y: gestureState.dy },
-                    useNativeDriver: false
-                }).start(handleSwipeRight);
-            }
-            else if (gestureState.dx < -swipeThreshold) {
-                react_native_1.Animated.spring(position, {
-                    toValue: { x: -cardWidth - 100, y: gestureState.dy },
-                    useNativeDriver: false
-                }).start(handleSwipeLeft);
-            }
-            else {
-                react_native_1.Animated.spring(position, {
-                    toValue: { x: 0, y: 0 },
-                    friction: 4,
-                    useNativeDriver: false
-                }).start();
-            }
-        },
-    }); }, [position, swipeThreshold, cardWidth, handleSwipeRight, handleSwipeLeft]);
+    var resetPosition = (0, react_1.useCallback)(function () {
+        translateX.value = 0;
+        translateY.value = 0;
+    }, [translateX, translateY]);
     (0, react_1.useEffect)(function () {
-        position.setValue({ x: 0, y: 0 });
-    }, [currentIndex, position]);
+        resetPosition();
+    }, [currentIndex, resetPosition]);
+    (0, react_1.useEffect)(function () {
+        setCurrentIndex(0);
+    }, [components.length]);
+    var panGesture = (0, react_1.useMemo)(function () { return react_native_gesture_handler_1.Gesture.Pan()
+        .onUpdate(function (event) {
+        translateX.value = event.translationX;
+        translateY.value = event.translationY;
+    })
+        .onEnd(function (event) {
+        if (event.translationX > swipeThreshold) {
+            translateX.value = (0, react_native_reanimated_1.withSpring)(cardWidth + 100, {}, function (finished) {
+                if (finished) {
+                    (0, react_native_reanimated_1.runOnJS)(handleSwipeRight)();
+                }
+            });
+        }
+        else if (event.translationX < -swipeThreshold) {
+            translateX.value = (0, react_native_reanimated_1.withSpring)(-cardWidth - 100, {}, function (finished) {
+                if (finished) {
+                    (0, react_native_reanimated_1.runOnJS)(handleSwipeLeft)();
+                }
+            });
+        }
+        else {
+            translateX.value = (0, react_native_reanimated_1.withSpring)(0, { damping: 15, stiffness: 150 });
+            translateY.value = (0, react_native_reanimated_1.withSpring)(0, { damping: 15, stiffness: 150 });
+        }
+    }); }, [cardWidth, handleSwipeLeft, handleSwipeRight, swipeThreshold, translateX, translateY]);
+    var focusedCardStyle = (0, react_native_reanimated_1.useAnimatedStyle)(function () {
+        var rotate = (0, react_native_reanimated_1.interpolate)(translateX.value, [-cardWidth / 2, 0, cardWidth / 2], [-10, 0, 10], react_native_reanimated_1.Extrapolation.CLAMP);
+        return {
+            transform: [
+                { rotate: "".concat(rotate, "deg") },
+                { translateX: translateX.value },
+                { translateY: translateY.value },
+            ],
+        };
+    });
+    var nextCardAnimatedStyle = (0, react_native_reanimated_1.useAnimatedStyle)(function () { return (__assign({ opacity: (0, react_native_reanimated_1.interpolate)(translateX.value, [-cardWidth / 2, 0, cardWidth / 2], [1, 0, 1], react_native_reanimated_1.Extrapolation.CLAMP), transform: [{
+                scale: (0, react_native_reanimated_1.interpolate)(translateX.value, [-cardWidth / 2, 0, cardWidth / 2], [1, 0.8, 1], react_native_reanimated_1.Extrapolation.CLAMP),
+            }] }, react_native_1.StyleSheet.absoluteFillObject)); });
     var renderComponents = (0, react_1.useCallback)(function (componentsArray) {
         return componentsArray.map(function (item, i) {
             if (i < currentIndex) {
                 return null;
             }
-            else if (i === currentIndex) {
-                return (<react_native_1.Animated.View key={i} style={[
-                        rotateAndTranslate,
+            if (i === currentIndex) {
+                return (<react_native_gesture_handler_1.GestureDetector key={i} gesture={panGesture}>
+                        <react_native_reanimated_1.default.View style={[
+                        focusedCardStyle,
                         react_native_1.StyleSheet.absoluteFillObject,
                         __assign({ backgroundColor: cardBackgroundColor || colors.surface, borderRadius: borderRadius !== null && borderRadius !== void 0 ? borderRadius : theme.sizes.CARD_BORDER_RADIUS }, (typeof cardShadow === 'string' ? theme.shadows[cardShadow] : cardShadow)),
                         cardContainerStyle,
                         focusedElementStyle,
-                    ]} {...panResponder.panHandlers}>
-                        {item}
-                    </react_native_1.Animated.View>);
+                    ]}>
+                            {item}
+                        </react_native_reanimated_1.default.View>
+                    </react_native_gesture_handler_1.GestureDetector>);
             }
-            else if (showNextCard && i === currentIndex + 1) {
-                return (<react_native_1.Animated.View key={i} style={[
+            if (showNextCard && i === currentIndex + 1) {
+                return (<react_native_reanimated_1.default.View key={i} style={[
                         nextCardAnimatedStyle,
                         __assign({ backgroundColor: nextCardBackgroundColor || colors.background, borderRadius: borderRadius !== null && borderRadius !== void 0 ? borderRadius : theme.sizes.CARD_BORDER_RADIUS }, (typeof nextCardShadow === 'string' ? theme.shadows[nextCardShadow] : nextCardShadow)),
                         nextElementStyle,
                     ]}>
                         {item}
-                    </react_native_1.Animated.View>);
+                    </react_native_reanimated_1.default.View>);
             }
-            else {
-                return null;
-            }
+            return null;
         }).reverse();
-    }, [currentIndex, rotateAndTranslate, focusedElementStyle, nextCardAnimatedStyle, cardBackgroundColor, nextCardBackgroundColor, cardShadow, nextCardShadow, cardContainerStyle, nextElementStyle, borderRadius, theme, colors, showNextCard, panResponder.panHandlers]);
-    (0, react_1.useEffect)(function () {
-        setCurrentIndex(0);
-    }, [components.length]);
+    }, [
+        currentIndex,
+        panGesture,
+        focusedCardStyle,
+        nextCardAnimatedStyle,
+        focusedElementStyle,
+        cardBackgroundColor,
+        nextCardBackgroundColor,
+        cardShadow,
+        nextCardShadow,
+        cardContainerStyle,
+        nextElementStyle,
+        borderRadius,
+        theme,
+        colors,
+        showNextCard,
+        cardWidth,
+    ]);
     var blockStyle = __assign({ width: cardWidth }, (Array.isArray(style) ? Object.assign.apply(Object, __spreadArray([{}], style, false)) : (style || {})));
     if (components.length === 0) {
         return <Block_1.default flex center style={blockStyle}/>;
     }
-    return (<Block_1.default flex center style={blockStyle}>
+    return (<Block_1.default flex center style={[blockStyle, { height: cardWidth * 1.2 }]}>
             {renderComponents(components)}
         </Block_1.default>);
 }
-exports.default = DeckSwiper;
+var WrappedDeckSwiper = (0, interop_1.registerInterop)(DeckSwiper, {
+    className: 'style',
+    cardContainerClassName: 'cardContainerStyle',
+    focusedElementClassName: 'focusedElementStyle',
+    nextElementClassName: 'nextElementStyle',
+});
+exports.default = WrappedDeckSwiper;
 //# sourceMappingURL=DeckSwiper.js.map

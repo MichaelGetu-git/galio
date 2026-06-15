@@ -1,5 +1,5 @@
 import { JSX } from "react";
-import { ViewStyle, StyleProp } from "react-native";
+import { StyleProp, ViewStyle } from "react-native";
 import { useTheme } from "./theme";
 interface DeckSwiperProps {
     onSwipeRight?: () => void;
@@ -17,7 +17,12 @@ interface DeckSwiperProps {
     nextCardShadow?: keyof ReturnType<typeof useTheme>["shadows"] | ViewStyle;
     borderRadius?: number;
     showNextCard?: boolean;
+    className?: string;
+    cardContainerClassName?: string;
+    focusedElementClassName?: string;
+    nextElementClassName?: string;
 }
 declare function DeckSwiper({ onSwipeRight, onSwipeLeft, focusedElementStyle, nextElementStyle, components, style, swipeThreshold, cardWidth, cardContainerStyle, cardShadow, cardBackgroundColor, nextCardBackgroundColor, nextCardShadow, borderRadius, showNextCard, }: DeckSwiperProps): JSX.Element;
-export default DeckSwiper;
+declare const WrappedDeckSwiper: typeof DeckSwiper;
+export default WrappedDeckSwiper;
 //# sourceMappingURL=DeckSwiper.d.ts.map

@@ -12,12 +12,14 @@ interface MainAccordionProps {
     listStyle?: ViewStyle;
     style?: ViewStyle;
     titleStyle?: TextStyle;
-    /**
-     * Semantic shadow level: 'none', 'xs', 'sm', 'md', 'lg', 'xl'.
-     * If not set, no shadow is applied.
-     */
     shadow?: 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+    className?: string;
+    headerClassName?: string;
+    contentClassName?: string;
+    listClassName?: string;
+    titleClassName?: string;
 }
 declare function Accordion({ dataArray, icon, expandedIcon, headerStyle, contentStyle, opened, onAccordionOpen, onAccordionClose, listStyle, style, titleStyle, shadow, }: MainAccordionProps): JSX.Element;
-export default Accordion;
+declare const WrappedAccordion: typeof Accordion;
+export default WrappedAccordion;
 //# sourceMappingURL=Accordion.d.ts.map
