@@ -69,7 +69,6 @@ Requires NativeWind v4 and the Galio Tailwind preset in your app's `tailwind.con
 
 | Prop               | Maps to        |
 | ------------------ | -------------- |
-| `className`        | `contentStyle` |
 | `contentClassName` | `contentStyle` |
 
 ### Example
