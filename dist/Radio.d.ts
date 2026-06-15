@@ -17,7 +17,11 @@ interface RadioProps {
     accessibilityLabel?: string;
     accessibilityHint?: string;
     size?: number | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+    className?: string;
+    labelClassName?: string;
+    containerClassName?: string;
 }
-declare function Radio({ color, containerStyle, disabled, flexDirection, initialValue, label, labelStyle, labelColor, onChange, radioOuterStyle, radioInnerStyle, value, accessibilityLabel, accessibilityHint, size, }: RadioProps): JSX.Element;
-export default Radio;
+declare function Radio({ color, containerStyle, disabled, flexDirection, initialValue, label, labelStyle, labelColor, onChange, radioOuterStyle, radioInnerStyle, value, accessibilityLabel, accessibilityHint, size, className, labelClassName, containerClassName }: RadioProps): JSX.Element;
+declare const WrappedRadio: typeof Radio;
+export default WrappedRadio;
 //# sourceMappingURL=Radio.d.ts.map

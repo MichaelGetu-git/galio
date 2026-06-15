@@ -57,6 +57,10 @@ export interface InputProps {
     keyboardType?: KeyboardTypeOptions;
     textContentType?: any;
     autoComplete?: any;
+    className?: string;
+    inputClassName?: string;
+    labelClassName?: string;
+    helpClassName?: string;
 }
 export interface InputRef {
     focus: () => void;
@@ -64,6 +68,6 @@ export interface InputRef {
     clear: () => void;
     isFocused: () => boolean;
 }
-declare const Input: React.ForwardRefExoticComponent<InputProps & React.RefAttributes<InputRef>>;
-export default Input;
+declare const WrappedInput: React.ForwardRefExoticComponent<InputProps & React.RefAttributes<InputRef>>;
+export default WrappedInput;
 //# sourceMappingURL=Input.d.ts.map

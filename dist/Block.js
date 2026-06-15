@@ -38,6 +38,7 @@ var react_1 = __importDefault(require("react"));
 var react_native_1 = require("react-native");
 var react_native_safe_area_context_1 = require("react-native-safe-area-context");
 var theme_1 = require("./theme");
+var interop_1 = require("./helpers/interop");
 // Extract specific props that aren't part of React Native's ViewStyle
 // No longer needed: all props are now documented in BlockProps
 function Block(props) {
@@ -165,5 +166,8 @@ function getCardStyles(theme, colors) {
         borderColor: colors.border,
     };
 }
-exports.default = Block;
+var WrappedBlock = (0, interop_1.registerInterop)(Block, {
+    className: 'style',
+});
+exports.default = WrappedBlock;
 //# sourceMappingURL=Block.js.map

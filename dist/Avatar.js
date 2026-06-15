@@ -13,9 +13,10 @@ var __assign = (this && this.__assign) || function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_native_1 = require("react-native");
 var theme_1 = require("./theme");
+var interop_1 = require("./helpers/interop");
 function Avatar(_a) {
     var _b;
-    var source = _a.source, label = _a.label, labelColor = _a.labelColor, _c = _a.size, size = _c === void 0 ? 50 : _c, backgroundColor = _a.backgroundColor, labelFontSize = _a.labelFontSize, labelFontWeight = _a.labelFontWeight, imageProps = _a.imageProps, imageStyle = _a.imageStyle, containerStyle = _a.containerStyle, style = _a.style, labelStyle = _a.labelStyle, labelTextStyle = _a.labelTextStyle, accessibilityLabel = _a.accessibilityLabel, accessibilityHint = _a.accessibilityHint, shadow = _a.shadow;
+    var source = _a.source, label = _a.label, labelColor = _a.labelColor, _c = _a.size, size = _c === void 0 ? 50 : _c, backgroundColor = _a.backgroundColor, labelFontSize = _a.labelFontSize, labelFontWeight = _a.labelFontWeight, imageProps = _a.imageProps, imageStyle = _a.imageStyle, containerStyle = _a.containerStyle, style = _a.style, labelStyle = _a.labelStyle, labelTextStyle = _a.labelTextStyle, accessibilityLabel = _a.accessibilityLabel, accessibilityHint = _a.accessibilityHint, shadow = _a.shadow, className = _a.className, imageClassName = _a.imageClassName, containerClassName = _a.containerClassName, labelClassName = _a.labelClassName, labelTextClassName = _a.labelTextClassName;
     var theme = (0, theme_1.useTheme)();
     var colors = theme.colors;
     var avatarSize = size || 50;
@@ -65,5 +66,12 @@ function Avatar(_a) {
                 </react_native_1.View>) : null}
         </react_native_1.View>);
 }
-exports.default = Avatar;
+var WrappedAvatar = (0, interop_1.registerInterop)(Avatar, {
+    className: 'style',
+    imageClassName: 'imageStyle',
+    containerClassName: 'containerStyle',
+    labelClassName: 'labelStyle',
+    labelTextClassName: 'labelTextStyle',
+});
+exports.default = WrappedAvatar;
 //# sourceMappingURL=Avatar.js.map
