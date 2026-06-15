@@ -10,6 +10,7 @@ import {
   ViewStyle,
 } from "react-native";
 
+import {registerInterop} from './helpers/interop';
 import { useTheme, useColors } from "./theme";
 import Text from "./Text";
 import Icon from "./Icon";
@@ -38,6 +39,11 @@ interface NavBarProps {
   titleNumberOfLines?: number;
   titleTextProps?: TextProps;
   accessibilityLabel?: string;
+
+  className?:string;
+  titleClassName?:string;
+  leftClassName?:string;
+  rightClassName?:string;
 }
 
 function NavBar({
@@ -61,6 +67,10 @@ function NavBar({
   titleNumberOfLines,
   titleTextProps,
   accessibilityLabel,
+  className,
+  titleClassName,
+  leftClassName,
+  rightClassName
 }: NavBarProps): JSX.Element {
   const theme = useTheme();
   const colors = useColors();
@@ -230,4 +240,11 @@ const styles = (theme: ReturnType<typeof useTheme>, colors: ReturnType<typeof us
     },
   });
 
-export default NavBar;
+const WrappedNavBar=registerInterop(NavBar, {
+  className: 'style',
+  titleClassName:'titleStyle',
+  leftClassName:'leftStyle',
+  rightClassName:'rightStyle',
+})  
+export default WrappedNavBar;
+

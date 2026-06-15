@@ -3,6 +3,7 @@ import type { JSX } from 'react';
 import { ViewStyle, View, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme, useColors } from './theme';
+import { registerInterop } from './helpers/interop';
 
 // Enhanced type definitions for better type safety
 
@@ -90,6 +91,8 @@ interface BlockProps {
    */
   style?: ViewStyle | ViewStyle[];
 
+  
+  className?: string;
 }
 
 // Extract specific props that aren't part of React Native's ViewStyle
@@ -308,4 +311,8 @@ function getCardStyles(theme: ReturnType<typeof useTheme>, colors: ReturnType<ty
   };
 }
 
-export default Block;
+const WrappedBlock=registerInterop(Block,{
+  className: 'style',
+})
+export default WrappedBlock;
+

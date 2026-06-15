@@ -5,7 +5,7 @@ import { useCallback, useState } from "react";
 import type { JSX } from "react";
 import { ActivityIndicator, Dimensions, Platform, Pressable, StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native";
 import Icon from "./Icon";
-
+import { registerInterop } from './helpers/interop';
 const { width } = Dimensions.get('window');
 
 export interface ButtonProps {
@@ -44,6 +44,9 @@ export interface ButtonProps {
     testID?: string;
     accessibilityLabel?: string;
     rippleColor?: string;
+
+    className?: string;
+    textClassName?:string;
 }
 
 function Button({
@@ -72,6 +75,8 @@ function Button({
     testID = undefined,
     accessibilityLabel = undefined,
     rippleColor = undefined,
+    className,
+    textClassName
 }: ButtonProps): JSX.Element {
     const theme = useTheme();
     const colors = useColors();
@@ -267,5 +272,9 @@ const styles = (theme: ReturnType<typeof useTheme>) => {
         },
     });
 };
+const WrappedButton = registerInterop(Button, {
+  className: 'style',
+  textClassName: 'textStyle',
+});
+export default WrappedButton;
 
-export default Button;

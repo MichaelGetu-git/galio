@@ -3,7 +3,7 @@ import type { JSX } from 'react';
 import Typography from './Text';
 import { useColors } from './theme';
 import { TextStyle, Pressable, ViewStyle, Platform } from 'react-native';
-
+import {registerInterop} from './helpers/interop';
 export interface LinkProps {
     children?: React.ReactNode;
     onPress: () => void;
@@ -12,6 +12,9 @@ export interface LinkProps {
     color?: string;
     disabled?: boolean;
     activeOpacity?: number;
+
+    className?:string;
+    textClassName?:string;
 }
 
 export interface linkRef {
@@ -26,6 +29,8 @@ const Link = forwardRef<linkRef, LinkProps>(({
     color,
     disabled = false,
     activeOpacity = 0.7,
+    className,
+    textClassName,
     ...rest
 }, ref): JSX.Element => {
     const colors = useColors();
@@ -83,4 +88,9 @@ const Link = forwardRef<linkRef, LinkProps>(({
     );
 });
 
-export default Link;
+const WrappedLink = registerInterop(Link, {
+    className: 'style',
+    textClassName: 'textStyle',
+});
+export default WrappedLink;
+

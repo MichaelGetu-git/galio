@@ -2,7 +2,7 @@ import { JSX, useCallback, useEffect, useMemo, useState } from "react";
 import { Pressable, StyleSheet, TextStyle, View, ViewStyle } from "react-native";
 import { useTheme, useColors } from "./theme";
 import Text from "./Text";
-
+import { registerInterop } from "./helpers/interop";
 interface RadioProps {
     color?: keyof ReturnType<typeof useColors> | string;
     containerStyle?: ViewStyle;
@@ -19,6 +19,11 @@ interface RadioProps {
     accessibilityLabel?: string;
     accessibilityHint?: string;
     size?: number | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+
+    
+    className?:string;
+    labelClassName?:string;
+    containerClassName?:string;
 }
 
 function Radio({
@@ -37,6 +42,9 @@ function Radio({
     accessibilityLabel,
     accessibilityHint,
     size = 'md',
+    className,
+    labelClassName,
+    containerClassName
 }: RadioProps): JSX.Element {
     const theme = useTheme();
     const colors = useColors();
@@ -202,4 +210,9 @@ const styles = (theme: ReturnType<typeof useTheme>, colors: ReturnType<typeof us
         },
     });
 
-export default Radio;
+const WrappedRadio = registerInterop(Radio, {
+    className:'containerStyle',
+    labelClassName:'labelStyle',
+    containerClassName:'containerStyle',
+})
+export default WrappedRadio;
