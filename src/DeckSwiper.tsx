@@ -1,7 +1,17 @@
-import { JSX, useEffect, useState, useMemo, useCallback } from "react";
-import { Animated, Dimensions, PanResponder, StyleSheet, ViewStyle, StyleProp } from "react-native";
+import { JSX, useCallback, useEffect, useMemo, useState } from "react";
+import { Dimensions, StyleProp, StyleSheet, ViewStyle } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, {
+    Extrapolation,
+    interpolate,
+    runOnJS,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
+} from "react-native-reanimated";
 import { useTheme, useColors } from "./theme";
 import Block from "./Block";
+import { registerInterop } from "./helpers/interop";
 
 const { width: SCREEN_WIDTH } = Dimensions.get('screen');
 
@@ -21,6 +31,10 @@ interface DeckSwiperProps {
     nextCardShadow?: keyof ReturnType<typeof useTheme>["shadows"] | ViewStyle;
     borderRadius?: number;
     showNextCard?: boolean;
+    className?: string;
+    cardContainerClassName?: string;
+    focusedElementClassName?: string;
+    nextElementClassName?: string;
 }
 
 function DeckSwiper({
@@ -43,108 +57,124 @@ function DeckSwiper({
     const theme = useTheme();
     const colors = useColors();
     const [currentIndex, setCurrentIndex] = useState(0);
-    const position = useMemo(() => new Animated.ValueXY(), []);
-
-    const rotate = useMemo(() => position.x.interpolate({
-        inputRange: [-cardWidth / 2, 0, cardWidth / 2],
-        outputRange: ["-10deg", "0deg", "10deg"],
-        extrapolate: "clamp"
-    }), [position.x, cardWidth]);
-    
-    const rotateAndTranslate = useMemo(() => ({
-        transform: [
-            { rotate },
-            ...position.getTranslateTransform()
-        ]
-    }), [rotate, position]);
-    
-    const nextCardOpacity = useMemo(() => position.x.interpolate({
-        inputRange: [-cardWidth / 2, 0, cardWidth / 2],
-        outputRange: [1, 0, 1],
-        extrapolate: "clamp"
-    }), [position.x, cardWidth]);
-    
-    const nextCardScale = useMemo(() => position.x.interpolate({
-        inputRange: [-cardWidth / 2, 0, cardWidth / 2],
-        outputRange: [1, 0.8, 1],
-        extrapolate: "clamp"
-    }), [position.x, cardWidth]);
-
-    const nextCardAnimatedStyle = useMemo(() => ({
-        opacity: nextCardOpacity,
-        transform: [{ scale: nextCardScale }],
-        ...StyleSheet.absoluteFillObject
-    }), [nextCardOpacity, nextCardScale]);
+    const translateX = useSharedValue(0);
+    const translateY = useSharedValue(0);
 
     const handleSwipeRight = useCallback(() => {
         if (currentIndex < components.length - 1) {
-            setCurrentIndex(prev => prev + 1);
+            setCurrentIndex((prev) => prev + 1);
             onSwipeRight?.();
         }
     }, [currentIndex, components.length, onSwipeRight]);
 
     const handleSwipeLeft = useCallback(() => {
         if (currentIndex < components.length - 1) {
-            setCurrentIndex(prev => prev + 1);
+            setCurrentIndex((prev) => prev + 1);
             onSwipeLeft?.();
         }
     }, [currentIndex, components.length, onSwipeLeft]);
 
-    const panResponder = useMemo(() => PanResponder.create({
-        onStartShouldSetPanResponder: () => true,
-        onPanResponderMove: (_, gestureState) => {
-            position.setValue({ x: gestureState.dx, y: gestureState.dy });
-        },
-        onPanResponderRelease: (_, gestureState) => {
-            if (gestureState.dx > swipeThreshold) {
-                Animated.spring(position, {
-                    toValue: { x: cardWidth + 100, y: gestureState.dy },
-                    useNativeDriver: false
-                }).start(handleSwipeRight);
-            } else if (gestureState.dx < -swipeThreshold) {
-                Animated.spring(position, {
-                    toValue: { x: -cardWidth - 100, y: gestureState.dy },
-                    useNativeDriver: false
-                }).start(handleSwipeLeft);
-            } else {
-                Animated.spring(position, {
-                    toValue: { x: 0, y: 0 },
-                    friction: 4,
-                    useNativeDriver: false
-                }).start();
-            }
-        },
-    }), [position, swipeThreshold, cardWidth, handleSwipeRight, handleSwipeLeft]);
+    const resetPosition = useCallback(() => {
+        translateX.value = 0;
+        translateY.value = 0;
+    }, [translateX, translateY]);
 
     useEffect(() => {
-        position.setValue({ x: 0, y: 0 });
-    }, [currentIndex, position]);
+        resetPosition();
+    }, [currentIndex, resetPosition]);
+
+    useEffect(() => {
+        setCurrentIndex(0);
+    }, [components.length]);
+
+    const panGesture = useMemo(() => Gesture.Pan()
+        .onUpdate((event) => {
+            translateX.value = event.translationX;
+            translateY.value = event.translationY;
+        })
+        .onEnd((event) => {
+            if (event.translationX > swipeThreshold) {
+                translateX.value = withSpring(cardWidth + 100, {}, (finished) => {
+                    if (finished) {
+                        runOnJS(handleSwipeRight)();
+                    }
+                });
+            } else if (event.translationX < -swipeThreshold) {
+                translateX.value = withSpring(-cardWidth - 100, {}, (finished) => {
+                    if (finished) {
+                        runOnJS(handleSwipeLeft)();
+                    }
+                });
+            } else {
+                translateX.value = withSpring(0, { damping: 15, stiffness: 150 });
+                translateY.value = withSpring(0, { damping: 15, stiffness: 150 });
+            }
+        }), [cardWidth, handleSwipeLeft, handleSwipeRight, swipeThreshold, translateX, translateY]);
+
+    const focusedCardStyle = useAnimatedStyle(() => {
+        const rotate = interpolate(
+            translateX.value,
+            [-cardWidth / 2, 0, cardWidth / 2],
+            [-10, 0, 10],
+            Extrapolation.CLAMP
+        );
+
+        return {
+            transform: [
+                { rotate: `${rotate}deg` },
+                { translateX: translateX.value },
+                { translateY: translateY.value },
+            ],
+        };
+    });
+
+    const nextCardAnimatedStyle = useAnimatedStyle(() => ({
+        opacity: interpolate(
+            translateX.value,
+            [-cardWidth / 2, 0, cardWidth / 2],
+            [1, 0, 1],
+            Extrapolation.CLAMP
+        ),
+        transform: [{
+            scale: interpolate(
+                translateX.value,
+                [-cardWidth / 2, 0, cardWidth / 2],
+                [1, 0.8, 1],
+                Extrapolation.CLAMP
+            ),
+        }],
+        ...StyleSheet.absoluteFillObject,
+    }));
 
     const renderComponents = useCallback((componentsArray: React.ReactNode[]) => {
         return componentsArray.map((item, i) => {
             if (i < currentIndex) {
                 return null;
-            } else if (i === currentIndex) {
+            }
+
+            if (i === currentIndex) {
                 return (
-                    <Animated.View
-                        key={i}
-                        style={[
-                            rotateAndTranslate,
-                            StyleSheet.absoluteFillObject,
-                            {
-                                backgroundColor: cardBackgroundColor || colors.surface,
-                                borderRadius: borderRadius ?? theme.sizes.CARD_BORDER_RADIUS,
-                                ...(typeof cardShadow === 'string' ? theme.shadows[cardShadow] : cardShadow),
-                            },
-                            cardContainerStyle,
-                            focusedElementStyle,
-                        ]}
-                        {...panResponder.panHandlers}
-                    >
-                        {item}
-                    </Animated.View>
+                    <GestureDetector key={i} gesture={panGesture}>
+                        <Animated.View
+                            style={[
+                                focusedCardStyle,
+                                StyleSheet.absoluteFillObject,
+                                {
+                                    backgroundColor: cardBackgroundColor || colors.surface,
+                                    borderRadius: borderRadius ?? theme.sizes.CARD_BORDER_RADIUS,
+                                    ...(typeof cardShadow === 'string' ? theme.shadows[cardShadow] : cardShadow),
+                                },
+                                cardContainerStyle,
+                                focusedElementStyle,
+                            ]}
+                        >
+                            {item}
+                        </Animated.View>
+                    </GestureDetector>
                 );
-            } else if (showNextCard && i === currentIndex + 1) {
+            }
+
+            if (showNextCard && i === currentIndex + 1) {
                 return (
                     <Animated.View
                         key={i}
@@ -161,15 +191,28 @@ function DeckSwiper({
                         {item}
                     </Animated.View>
                 );
-            } else {
-                return null;
             }
-        }).reverse();
-    }, [currentIndex, rotateAndTranslate, focusedElementStyle, nextCardAnimatedStyle, cardBackgroundColor, nextCardBackgroundColor, cardShadow, nextCardShadow, cardContainerStyle, nextElementStyle, borderRadius, theme, colors, showNextCard, panResponder.panHandlers]);
 
-    useEffect(() => {
-        setCurrentIndex(0);
-    }, [components.length]);
+            return null;
+        }).reverse();
+    }, [
+        currentIndex,
+        panGesture,
+        focusedCardStyle,
+        nextCardAnimatedStyle,
+        focusedElementStyle,
+        cardBackgroundColor,
+        nextCardBackgroundColor,
+        cardShadow,
+        nextCardShadow,
+        cardContainerStyle,
+        nextElementStyle,
+        borderRadius,
+        theme,
+        colors,
+        showNextCard,
+        cardWidth,
+    ]);
 
     const blockStyle: ViewStyle = {
         width: cardWidth,
@@ -181,10 +224,17 @@ function DeckSwiper({
     }
 
     return (
-        <Block flex center style={blockStyle}>
+        <Block flex center style={[blockStyle, { height: cardWidth * 1.2 }]}>
             {renderComponents(components)}
         </Block>
     );
 }
 
-export default DeckSwiper;
+const WrappedDeckSwiper = registerInterop(DeckSwiper, {
+    className: 'style',
+    cardContainerClassName: 'cardContainerStyle',
+    focusedElementClassName: 'focusedElementStyle',
+    nextElementClassName: 'nextElementStyle',
+});
+
+export default WrappedDeckSwiper;
