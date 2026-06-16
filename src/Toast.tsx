@@ -1,9 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Dimensions, StyleSheet, Animated, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Dimensions, StyleSheet, View } from 'react-native';
+import Animated, {
+    runOnJS,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
+} from 'react-native-reanimated';
 import { useTheme, useColors } from './theme';
 import Text from './Text';
+import { registerInterop } from './helpers/interop';
 
-const { height, width } = Dimensions.get('screen');
+const { height } = Dimensions.get('screen');
 
 interface ToastProps {
     children: React.ReactNode;
@@ -16,6 +23,8 @@ interface ToastProps {
     round?: boolean;
     style?: any;
     textStyle?: any;
+    className?: string;
+    textClassName?: string;
 }
 
 function Toast({
@@ -33,17 +42,17 @@ function Toast({
     const theme = useTheme();
     const colors = useColors();
     const [internalIsShow, setInternalIsShow] = useState(isShow);
-    const [opacity, setOpacity] = useState(0);
-    const fadeAnim = useRef(new Animated.Value(0)).current;
-    const animationRef = useRef<Animated.CompositeAnimation | null>(null);
-    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const opacity = useSharedValue(isShow ? 1 : 0);
+
+    const hideToast = () => {
+        setInternalIsShow(false);
+    };
 
     const getThemeColor = (colorName?: string) => {
         if (!colorName) return colors.primary;
         if (typeof colorName === 'string' && colorName.startsWith('#')) {
             return colorName;
         }
-        // Explicit color map for theme safety
         const colorMap: { [key: string]: string } = {
             primary: colors.primary,
             success: colors.success,
@@ -69,44 +78,24 @@ function Toast({
     };
 
     useEffect(() => {
-        
-        if (isShow && !internalIsShow) {
-            
+        if (isShow) {
             setInternalIsShow(true);
-            setOpacity(1);
-            animationRef.current = Animated.timing(fadeAnim, {
-                toValue: 1,
-                duration: fadeInDuration,
-                useNativeDriver: false,
-            });
-            
+            opacity.value = withTiming(1, { duration: fadeInDuration });
+            return;
         }
-        
-        if (!isShow && internalIsShow) {
-            console.log('Hiding toast');
-            setOpacity(0); // Set opacity immediately for fallback
-            
-            animationRef.current = Animated.timing(fadeAnim, {
-                toValue: 0,
-                duration: fadeOutDuration,
-                useNativeDriver: false,
+
+        if (internalIsShow) {
+            opacity.value = withTiming(0, { duration: fadeOutDuration }, (finished) => {
+                if (finished) {
+                    runOnJS(hideToast)();
+                }
             });
-            
-            
-            timeoutRef.current = setTimeout(() => {
-                setInternalIsShow(false);
-            }, fadeOutDuration);
         }
-        
-        return () => {
-            if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
-            }
-            if (animationRef.current) {
-                animationRef.current.stop();
-            }
-        };
-    }, [isShow, internalIsShow, fadeInDuration, fadeOutDuration, fadeAnim]);
+    }, [isShow, fadeInDuration, fadeOutDuration, internalIsShow, opacity]);
+
+    const animatedStyle = useAnimatedStyle(() => ({
+        opacity: opacity.value,
+    }));
 
     const renderContent = () => {
         if (typeof children === 'string') {
@@ -115,30 +104,30 @@ function Toast({
         return children;
     };
 
-   
+    if (!internalIsShow) {
+        return null;
+    }
 
     const backgroundColor = getThemeColor(color);
     const borderRadius = round ? theme.sizes.BASE * 2 : theme.sizes.BASE;
     const topPosition = getTopPosition();
-    
-   
-    
-    const toastStyles = [
-        styles(theme, colors).toast,
-        {
-            backgroundColor,
-            top: topPosition,
-            opacity: opacity,
-            borderRadius,
-            borderColor: colors.border || 'rgba(255,255,255,0.3)',
-            shadowColor: colors.black,
-        },
-        style,
-    ];
 
     return (
         <View style={styles(theme, colors).overlay} pointerEvents="none">
-            <Animated.View style={toastStyles}>
+            <Animated.View
+                style={[
+                    styles(theme, colors).toast,
+                    animatedStyle,
+                    {
+                        backgroundColor,
+                        top: topPosition,
+                        borderRadius,
+                        borderColor: colors.border || 'rgba(255,255,255,0.3)',
+                        shadowColor: colors.black,
+                    },
+                    style,
+                ]}
+            >
                 {renderContent()}
             </Animated.View>
         </View>
@@ -176,4 +165,9 @@ const styles = (theme: ReturnType<typeof useTheme>, colors: ReturnType<typeof us
         },
     });
 
-export default Toast;
+const WrappedToast = registerInterop(Toast, {
+    className: 'style',
+    textClassName: 'textStyle',
+});
+
+export default WrappedToast;

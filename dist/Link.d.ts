@@ -8,10 +8,12 @@ export interface LinkProps {
     color?: string;
     disabled?: boolean;
     activeOpacity?: number;
+    className?: string;
+    textClassName?: string;
 }
 export interface linkRef {
     press: () => void;
 }
-declare const Link: React.ForwardRefExoticComponent<LinkProps & React.RefAttributes<linkRef>>;
-export default Link;
+declare const WrappedLink: React.ForwardRefExoticComponent<LinkProps & React.RefAttributes<linkRef>>;
+export default WrappedLink;
 //# sourceMappingURL=Link.d.ts.map

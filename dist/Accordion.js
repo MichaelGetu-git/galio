@@ -10,18 +10,52 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_native_1 = require("react-native");
 var react_1 = require("react");
-var react_native_2 = require("react-native");
+var react_native_reanimated_1 = __importStar(require("react-native-reanimated"));
 var Text_1 = __importDefault(require("./Text"));
 var Block_1 = __importDefault(require("./Block"));
 var Icon_1 = __importDefault(require("./Icon"));
 var theme_1 = require("./theme");
-var width = react_native_2.Dimensions.get('screen').width;
+var interop_1 = require("./helpers/interop");
+var width = react_native_1.Dimensions.get('screen').width;
 function AccordionContent(_a) {
     var content = _a.content, contentStyle = _a.contentStyle;
     var theme = (0, theme_1.useTheme)();
@@ -41,18 +75,36 @@ function AccordionHeader(_a) {
         </Block_1.default>);
 }
 function AccordionAnimation(_a) {
-    var children = _a.children, style = _a.style;
-    var fade = (0, react_1.useState)(new react_native_1.Animated.Value(0.3))[0];
+    var children = _a.children, expanded = _a.expanded, style = _a.style;
+    var opacity = (0, react_native_reanimated_1.useSharedValue)(expanded ? 1 : 0);
+    var contentHeight = (0, react_native_reanimated_1.useSharedValue)(0);
+    var measuredHeight = (0, react_native_reanimated_1.useSharedValue)(0);
     (0, react_1.useEffect)(function () {
-        react_native_1.Animated.timing(fade, {
-            toValue: 1,
-            duration: 400,
-            useNativeDriver: true
-        }).start();
-    }, [fade]);
-    return (<react_native_1.Animated.View style={__assign(__assign({}, style), { opacity: fade })}>
-            {children}
-        </react_native_1.Animated.View>);
+        if (expanded) {
+            opacity.value = (0, react_native_reanimated_1.withTiming)(1, { duration: 400 });
+            contentHeight.value = (0, react_native_reanimated_1.withTiming)(measuredHeight.value, { duration: 400 });
+        }
+        else {
+            opacity.value = (0, react_native_reanimated_1.withTiming)(0, { duration: 300 });
+            contentHeight.value = (0, react_native_reanimated_1.withTiming)(0, { duration: 300 });
+        }
+    }, [expanded, contentHeight, measuredHeight, opacity]);
+    var animatedStyle = (0, react_native_reanimated_1.useAnimatedStyle)(function () { return ({
+        opacity: opacity.value,
+        height: contentHeight.value,
+        overflow: 'hidden',
+    }); });
+    return (<react_native_reanimated_1.default.View style={[animatedStyle, style]}>
+            <react_native_1.View onLayout={function (event) {
+            var height = event.nativeEvent.layout.height;
+            measuredHeight.value = height;
+            if (expanded) {
+                contentHeight.value = height;
+            }
+        }}>
+                {children}
+            </react_native_1.View>
+        </react_native_reanimated_1.default.View>);
 }
 function AccordionItem(_a) {
     var expanded = _a.expanded, expandedIcon = _a.expandedIcon, headerStyle = _a.headerStyle, contentStyle = _a.contentStyle, icon = _a.icon, index = _a.index, item = _a.item, onAccordionClose = _a.onAccordionClose, onAccordionOpen = _a.onAccordionOpen, setSelected = _a.setSelected, titleStyle = _a.titleStyle;
@@ -72,9 +124,9 @@ function AccordionItem(_a) {
                     <AccordionHeader expanded={expanded} expandedIcon={expandedIcon} headerStyle={headerStyle} icon={icon} title={item === null || item === void 0 ? void 0 : item.title} chapterIcon={item === null || item === void 0 ? void 0 : item.icon} titleStyle={(item === null || item === void 0 ? void 0 : item.titleStyle) || titleStyle}/>
                 </Block_1.default>
             </react_native_1.Pressable>
-            {expanded ? (<AccordionAnimation style={contentStyle}>
-                    <AccordionContent content={(item === null || item === void 0 ? void 0 : item.content) || ''} contentStyle={contentStyle}/>
-                </AccordionAnimation>) : null}
+            <AccordionAnimation expanded={!!expanded} style={contentStyle}>
+                <AccordionContent content={(item === null || item === void 0 ? void 0 : item.content) || ''} contentStyle={contentStyle}/>
+            </AccordionAnimation>
         </Block_1.default>);
 }
 function Accordion(_a) {
@@ -83,7 +135,6 @@ function Accordion(_a) {
     var theme = (0, theme_1.useTheme)();
     var colors = (0, theme_1.useColors)();
     var _v = (0, react_1.useState)(opened), selected = _v[0], setSelected = _v[1];
-    // Default styles for light/dark mode
     var defaultHeaderStyle = {
         padding: (_c = (_b = theme.sizes) === null || _b === void 0 ? void 0 : _b.BASE) !== null && _c !== void 0 ? _c : 16,
         flexDirection: 'row',
@@ -104,19 +155,17 @@ function Accordion(_a) {
         borderTopWidth: theme.mode === 'dark' ? 1 : 0,
         borderTopColor: theme.mode === 'dark' ? colors.borderHover : undefined,
     };
-    // Use semantic shadow prop for all platforms
     var shadowStyle = {};
     if (shadow && shadow !== 'none') {
         var shadowDef = ((_p = theme.shadows) === null || _p === void 0 ? void 0 : _p[shadow]) || {};
-        shadowStyle = react_native_2.Platform.select({
+        shadowStyle = react_native_1.Platform.select({
             ios: shadowDef.ios || {},
             android: shadowDef.android || {},
         }) || {};
-        if (react_native_2.Platform.OS === 'web' && shadowDef.web) {
+        if (react_native_1.Platform.OS === 'web' && shadowDef.web) {
             shadowStyle = __assign({}, shadowDef.web);
         }
     }
-    // Only apply overflow: 'visible' if shadow is present, otherwise let user override
     var defaultContainerStyle = __assign(__assign(__assign({}, shadowStyle), { borderRadius: (_r = (_q = theme.sizes) === null || _q === void 0 ? void 0 : _q.CARD_BORDER_RADIUS) !== null && _r !== void 0 ? _r : 16, marginBottom: (_t = (_s = theme.sizes) === null || _s === void 0 ? void 0 : _s.BASE) !== null && _t !== void 0 ? _t : 16, backgroundColor: 'transparent' }), (shadow && shadow !== 'none' ? { overflow: 'visible' } : {}));
     return (<Block_1.default style={[styles(theme, colors).container, defaultContainerStyle, style]}>
             <react_native_1.View style={listStyle}>
@@ -124,15 +173,12 @@ function Accordion(_a) {
             </react_native_1.View>
         </Block_1.default>);
 }
-// Semantic version: use theme.sizes and theme.shadows if available
 var styles = function (theme, colors) {
     var _a, _b, _c, _d, _e, _f;
-    // Prefer semantic theme values if present, fallback to old values
     var borderRadius = (_b = (_a = theme === null || theme === void 0 ? void 0 : theme.sizes) === null || _a === void 0 ? void 0 : _a.CARD_BORDER_RADIUS) !== null && _b !== void 0 ? _b : 16;
     var padding = 8;
     var headerPadding = 6;
     var contentPadding = 10;
-    // Use semantic shadow (md) for Accordion
     var shadow = (_f = (_d = (_c = theme === null || theme === void 0 ? void 0 : theme.shadows) === null || _c === void 0 ? void 0 : _c.md) !== null && _d !== void 0 ? _d : (_e = theme === null || theme === void 0 ? void 0 : theme.shadows) === null || _e === void 0 ? void 0 : _e.default) !== null && _f !== void 0 ? _f : {
         ios: {
             shadowColor: colors.border,
@@ -147,11 +193,11 @@ var styles = function (theme, colors) {
             boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.2)',
         },
     };
-    var baseShadow = react_native_2.Platform.select({
+    var baseShadow = react_native_1.Platform.select({
         ios: shadow.ios,
         android: shadow.android,
     });
-    var webShadow = react_native_2.Platform.OS === 'web' ? shadow.web : {};
+    var webShadow = react_native_1.Platform.OS === 'web' ? shadow.web : {};
     return react_native_1.StyleSheet.create({
         container: __assign(__assign({ flex: 1, width: width * 0.8, borderRadius: borderRadius, padding: padding, backgroundColor: colors.surface }, baseShadow), webShadow),
         header: {
@@ -162,5 +208,12 @@ var styles = function (theme, colors) {
         },
     });
 };
-exports.default = Accordion;
+var WrappedAccordion = (0, interop_1.registerInterop)(Accordion, {
+    className: 'style',
+    headerClassName: 'headerStyle',
+    contentClassName: 'contentStyle',
+    listClassName: 'listStyle',
+    titleClassName: 'titleStyle',
+});
+exports.default = WrappedAccordion;
 //# sourceMappingURL=Accordion.js.map

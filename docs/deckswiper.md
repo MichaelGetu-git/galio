@@ -51,3 +51,34 @@ import { DeckSwiper } from 'galio-framework';
   borderRadius={24}
 />
 ```
+## NativeWind / Tailwind (optional)
+
+DeckSwiper supports [NativeWind](https://www.nativewind.dev/) v4 when it is installed in your app. Tailwind `className` props are converted to the corresponding React Native style props, allowing you to customize the swiper container and card appearance using utility classes.
+
+Requires NativeWind v4 and the Galio Tailwind preset in your app's `tailwind.config.js` (`nativewind/preset` + `galio-tailwind-preset`).
+
+### className mapping
+
+| Prop                      | Maps to               |
+| ------------------------- | --------------------- |
+| `className`               | `style`               |
+| `focusedElementClassName` | `focusedElementStyle` |
+| `nextElementClassName`    | `nextElementStyle`    |
+| `cardContainerClassName`  | `cardContainerStyle`  |
+
+### Example
+
+```tsx
+<DeckSwiper
+  components={[
+    <Card key="1" title="First Card" />,
+    <Card key="2" title="Second Card" />,
+    <Card key="3" title="Third Card" />,
+  ]}
+  className="w-full"
+  cardContainerClassName="rounded-2xl border border-galio-border"
+  focusedElementClassName="bg-galio-surface"
+  nextElementClassName="opacity-80"
+/>
+```
+

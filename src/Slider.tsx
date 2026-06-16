@@ -8,6 +8,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import { useTheme, useColors } from './theme';
+import {registerInterop} from './helpers/interop';
 
 interface SliderProps {
   value?: number;
@@ -22,6 +23,12 @@ interface SliderProps {
   onValueChange?: (value: number) => void;
   accessibilityLabel?: string;
   accessibilityHint?: string;
+
+  
+  className?:string;
+  containerClassName?:string;
+  trackClassName?:string;
+  thumbClassName?:string;
 }
 
 const Slider: React.FC<SliderProps> = ({
@@ -37,6 +44,10 @@ const Slider: React.FC<SliderProps> = ({
   thumbStyle,
   accessibilityLabel,
   accessibilityHint,
+  className,
+  containerClassName,
+  trackClassName,
+  thumbClassName
 }) => {
   const theme = useTheme();
   const colors = useColors();
@@ -176,4 +187,10 @@ const styles = (theme: ReturnType<typeof useTheme>, colors: ReturnType<typeof us
     },
   });
 
-export default Slider;
+const WrappedSlider=registerInterop(Slider,{
+  className: 'containerStyle',
+  trackClassName: 'trackStyle',
+  thumbClassName: 'thumbStyle',
+  containerClassName: 'containerStyle',
+})
+export default WrappedSlider;

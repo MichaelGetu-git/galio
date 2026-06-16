@@ -19,6 +19,7 @@ var Block_1 = __importDefault(require("./Block"));
 var theme_1 = require("./theme");
 var Icon_1 = __importDefault(require("./Icon"));
 var Text_1 = __importDefault(require("./Text"));
+var interop_1 = require("./helpers/interop");
 function renderImage(_a) {
     var image = _a.image, imageBlockStyle = _a.imageBlockStyle, imageStyle = _a.imageStyle;
     var theme = (0, theme_1.useTheme)();
@@ -93,7 +94,7 @@ function renderAuthor(_a) {
         </Block_1.default>);
 }
 function Card(_a) {
-    var avatar = _a.avatar, title = _a.title, titleColor = _a.titleColor, caption = _a.caption, captionColor = _a.captionColor, location = _a.location, locationColor = _a.locationColor, _b = _a.borderless, borderless = _b === void 0 ? false : _b, footerStyle = _a.footerStyle, image = _a.image, imageBlockStyle = _a.imageBlockStyle, imageStyle = _a.imageStyle, children = _a.children, _c = _a.card, card = _c === void 0 ? true : _c, _d = _a.shadow, shadow = _d === void 0 ? true : _d, style = _a.style, _e = _a.neutral, neutral = _e === void 0 ? false : _e, _f = _a.fullBackgroundImage, fullBackgroundImage = _f === void 0 ? false : _f, authorImageSrc = _a.authorImageSrc, authorTitle = _a.authorTitle, authorSubTitle = _a.authorSubTitle, onPress = _a.onPress, rightSideComponent = _a.rightSideComponent, _g = _a.flex, flex = _g === void 0 ? false : _g, shadowColor = _a.shadowColor;
+    var avatar = _a.avatar, title = _a.title, titleColor = _a.titleColor, caption = _a.caption, captionColor = _a.captionColor, location = _a.location, locationColor = _a.locationColor, _b = _a.borderless, borderless = _b === void 0 ? false : _b, footerStyle = _a.footerStyle, image = _a.image, imageBlockStyle = _a.imageBlockStyle, imageStyle = _a.imageStyle, children = _a.children, _c = _a.card, card = _c === void 0 ? true : _c, _d = _a.shadow, shadow = _d === void 0 ? true : _d, style = _a.style, _e = _a.neutral, neutral = _e === void 0 ? false : _e, _f = _a.fullBackgroundImage, fullBackgroundImage = _f === void 0 ? false : _f, authorImageSrc = _a.authorImageSrc, authorTitle = _a.authorTitle, authorSubTitle = _a.authorSubTitle, onPress = _a.onPress, rightSideComponent = _a.rightSideComponent, _g = _a.flex, flex = _g === void 0 ? false : _g, shadowColor = _a.shadowColor, className = _a.className, imageClassName = _a.imageClassName, footerClassName = _a.footerClassName, imageBlockClassName = _a.imageBlockClassName;
     var theme = (0, theme_1.useTheme)();
     var colors = (0, theme_1.useColors)();
     // Use authorImageSrc as avatar if provided
@@ -208,5 +209,11 @@ var styles = function (theme, colors) {
         },
     });
 };
-exports.default = Card;
+var WrappedCard = (0, interop_1.registerInterop)(Card, {
+    className: 'style',
+    imageClassName: 'imageStyle',
+    footerClassName: 'footerStyle',
+    imageBlockClassName: 'imageBlockStyle',
+});
+exports.default = WrappedCard;
 //# sourceMappingURL=Card.js.map

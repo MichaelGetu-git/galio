@@ -1,10 +1,15 @@
-import { Animated, FlatList, StyleSheet, TouchableWithoutFeedback, ViewStyle, TextStyle, Pressable, View } from "react-native";
+import { Dimensions, Platform, Pressable, StyleSheet, View, ViewStyle, TextStyle } from "react-native";
 import { useEffect, useState, type JSX } from "react";
-import { Dimensions, Platform } from "react-native";
+import Animated, {
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
+} from "react-native-reanimated";
 import Text from "./Text";
 import Block from "./Block";
 import Icon from "./Icon";
 import { useTheme, useColors } from "./theme";
+import { registerInterop } from "./helpers/interop";
 
 const { width } = Dimensions.get('screen');
 
@@ -89,23 +94,44 @@ function AccordionHeader({
 
 interface AccordionAnimationProps {
     children: JSX.Element;
+    expanded: boolean;
     style?: ViewStyle;
 }
 
-function AccordionAnimation({ children, style }: AccordionAnimationProps): JSX.Element {
-    const [fade] = useState(new Animated.Value(0.3));
+function AccordionAnimation({ children, expanded, style }: AccordionAnimationProps): JSX.Element {
+    const opacity = useSharedValue(expanded ? 1 : 0);
+    const contentHeight = useSharedValue(0);
+    const measuredHeight = useSharedValue(0);
 
     useEffect(() => {
-        Animated.timing(fade, {
-            toValue: 1,
-            duration: 400,
-            useNativeDriver: true
-        }).start();
-    }, [fade]);
+        if (expanded) {
+            opacity.value = withTiming(1, { duration: 400 });
+            contentHeight.value = withTiming(measuredHeight.value, { duration: 400 });
+        } else {
+            opacity.value = withTiming(0, { duration: 300 });
+            contentHeight.value = withTiming(0, { duration: 300 });
+        }
+    }, [expanded, contentHeight, measuredHeight, opacity]);
+
+    const animatedStyle = useAnimatedStyle(() => ({
+        opacity: opacity.value,
+        height: contentHeight.value,
+        overflow: 'hidden' as const,
+    }));
 
     return (
-        <Animated.View style={{ ...style, opacity: fade }}>
-            {children}
+        <Animated.View style={[animatedStyle, style]}>
+            <View
+                onLayout={(event) => {
+                    const height = event.nativeEvent.layout.height;
+                    measuredHeight.value = height;
+                    if (expanded) {
+                        contentHeight.value = height;
+                    }
+                }}
+            >
+                {children}
+            </View>
         </Animated.View>
     );
 }
@@ -164,14 +190,12 @@ function AccordionItem({
                     />
                 </Block>
             </Pressable>
-            {expanded ? (
-                <AccordionAnimation style={contentStyle as any}>
-                    <AccordionContent
-                        content={item?.content || ''}
-                        contentStyle={contentStyle}
-                    />
-                </AccordionAnimation>
-            ) : null}
+            <AccordionAnimation expanded={!!expanded} style={contentStyle as ViewStyle}>
+                <AccordionContent
+                    content={item?.content || ''}
+                    contentStyle={contentStyle}
+                />
+            </AccordionAnimation>
         </Block>
     );
 }
@@ -188,11 +212,12 @@ interface MainAccordionProps {
     listStyle?: ViewStyle;
     style?: ViewStyle;
     titleStyle?: TextStyle;
-    /**
-     * Semantic shadow level: 'none', 'xs', 'sm', 'md', 'lg', 'xl'.
-     * If not set, no shadow is applied.
-     */
     shadow?: 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+    className?: string;
+    headerClassName?: string;
+    contentClassName?: string;
+    listClassName?: string;
+    titleClassName?: string;
 }
 
 function Accordion({
@@ -213,7 +238,6 @@ function Accordion({
     const colors = useColors();
     const [selected, setSelected] = useState<number | undefined>(opened);
 
-    // Default styles for light/dark mode
     const defaultHeaderStyle: ViewStyle = {
         padding: theme.sizes?.BASE ?? 16,
         flexDirection: 'row',
@@ -234,7 +258,7 @@ function Accordion({
         borderTopWidth: theme.mode === 'dark' ? 1 : 0,
         borderTopColor: theme.mode === 'dark' ? colors.borderHover : undefined,
     };
-    // Use semantic shadow prop for all platforms
+
     let shadowStyle: ViewStyle = {};
     if (shadow && shadow !== 'none') {
         const shadowDef = theme.shadows?.[shadow] || {};
@@ -246,7 +270,7 @@ function Accordion({
             shadowStyle = { ...shadowDef.web };
         }
     }
-    // Only apply overflow: 'visible' if shadow is present, otherwise let user override
+
     const defaultContainerStyle: ViewStyle = {
         ...shadowStyle,
         borderRadius: theme.sizes?.CARD_BORDER_RADIUS ?? 16,
@@ -254,6 +278,7 @@ function Accordion({
         backgroundColor: 'transparent',
         ...(shadow && shadow !== 'none' ? { overflow: 'visible' } : {}),
     };
+
     return (
         <Block style={[styles(theme, colors).container, defaultContainerStyle, style] as any}>
             <View style={listStyle}>
@@ -278,14 +303,11 @@ function Accordion({
     );
 }
 
-// Semantic version: use theme.sizes and theme.shadows if available
 const styles = (theme: ReturnType<typeof useTheme>, colors: ReturnType<typeof useColors>) => {
-    // Prefer semantic theme values if present, fallback to old values
     const borderRadius = theme?.sizes?.CARD_BORDER_RADIUS ?? 16;
     const padding = 8;
     const headerPadding = 6;
     const contentPadding = 10;
-    // Use semantic shadow (md) for Accordion
     const shadow = theme?.shadows?.md ?? theme?.shadows?.default ?? {
         ios: {
             shadowColor: colors.border,
@@ -324,4 +346,12 @@ const styles = (theme: ReturnType<typeof useTheme>, colors: ReturnType<typeof us
     });
 };
 
-export default Accordion;
+const WrappedAccordion = registerInterop(Accordion, {
+    className: 'style',
+    headerClassName: 'headerStyle',
+    contentClassName: 'contentStyle',
+    listClassName: 'listStyle',
+    titleClassName: 'titleStyle',
+});
+
+export default WrappedAccordion;
