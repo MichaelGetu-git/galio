@@ -2,7 +2,7 @@ import React from 'react';
 import type { JSX } from 'react';
 import { ViewStyle, View, Platform } from 'react-native';
 import { SafeAreaView as SafeAreaViewNative } from 'react-native-safe-area-context';
-import { useTheme, useColors } from './theme';
+import { useTheme, useColors, validateShadowKey } from './theme';
 import { registerInterop } from './helpers/interop';
 
 // Web-safe SafeAreaView: on web, SafeAreaView may not behave as expected
@@ -14,7 +14,7 @@ const SafeAreaView = Platform.OS === 'web' ? View : SafeAreaViewNative;
 /**
  * Semantic shadow levels for cross-platform consistency.
  */
-type ShadowLevel = 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+type ShadowLevel = 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'default' | 'strong';
 type SpaceType = 'between' | 'around' | 'evenly' | 'left' | 'right' | 'center' | null;
 
 interface BlockProps {
@@ -142,6 +142,11 @@ function Block(props: BlockProps): JSX.Element {
   }
   const theme = useTheme();
   const colors = useColors();
+
+  // Validate shadow key
+  if (typeof shadow === 'string' && shadow !== 'none') {
+    shadow = validateShadowKey(shadow, theme);
+  }
 
   // Build styles using composition pattern for better maintainability
   const blockStyles = useBlockStyles({

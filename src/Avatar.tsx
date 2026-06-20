@@ -1,13 +1,13 @@
 import { JSX } from "react";
 import { StyleSheet, ViewStyle, View, Text, Image, ImageSourcePropType, Platform, ImageStyle, TextStyle } from "react-native";
-import { useTheme, useColors } from "./theme";
+import { useTheme, useColors, validateShadowKey } from "./theme";
 import { registerInterop } from './helpers/interop';  
 interface AvatarProps {
     /**
-     * Semantic shadow level: 'none', 'xs', 'sm', 'md', 'lg', 'xl'.
+     * Semantic shadow level: 'none', 'xs', 'sm', 'md', 'lg', 'xl', 'default', 'strong'.
      * If not set, no shadow is applied.
      */
-    shadow?: 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+    shadow?: 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'default' | 'strong';
     /**
      * Image source for the avatar (URL, require, etc.)
      */
@@ -104,10 +104,13 @@ function Avatar({
     const colors = theme.colors;
     const avatarSize = size || 50;
 
+    // Validate shadow key (only if not 'none')
+    const validatedShadow = shadow === 'none' ? 'none' : validateShadowKey(shadow, theme);
+
     // If shadow prop is set and not 'none', apply theme shadow for current platform
     let shadowStyle: ViewStyle = {};
-    if (shadow && shadow !== 'none') {
-        const shadowDef = theme.shadows?.[shadow] || {};
+    if (validatedShadow && validatedShadow !== 'none') {
+        const shadowDef = theme.shadows?.[validatedShadow as keyof typeof theme.shadows] || {};
         shadowStyle = Platform.select({
             ios: (shadowDef.ios || {}) as ViewStyle,
             android: (shadowDef.android || {}) as ViewStyle,

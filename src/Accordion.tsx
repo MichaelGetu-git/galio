@@ -212,7 +212,7 @@ interface MainAccordionProps {
     listStyle?: ViewStyle;
     style?: ViewStyle;
     titleStyle?: TextStyle;
-    shadow?: 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+    shadow?: 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'default' | 'strong';
     className?: string;
     headerClassName?: string;
     contentClassName?: string;
@@ -238,6 +238,9 @@ function Accordion({
     const colors = useColors();
     const [selected, setSelected] = useState<number | undefined>(opened);
 
+    // Validate shadow key
+    const validatedShadow = validateShadowKey(shadow, theme);
+
     const defaultHeaderStyle: ViewStyle = {
         padding: theme.sizes?.BASE ?? 16,
         flexDirection: 'row',
@@ -260,8 +263,8 @@ function Accordion({
     };
 
     let shadowStyle: ViewStyle = {};
-    if (shadow && shadow !== 'none') {
-        const shadowDef = theme.shadows?.[shadow] || {};
+    if (validatedShadow && validatedShadow !== 'none') {
+        const shadowDef = theme.shadows?.[validatedShadow as keyof typeof theme.shadows] || {};
         shadowStyle = Platform.select({
             ios: (shadowDef.ios || {}) as ViewStyle,
             android: (shadowDef.android || {}) as ViewStyle,

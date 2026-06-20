@@ -1,6 +1,4 @@
-import { useTheme, useColors } from "./theme";
-import type { SHADOWS } from "./theme/colors";
-type ShadowKey = keyof typeof SHADOWS;
+import { useTheme, useColors, validateShadowKey, type ShadowKey } from "./theme";
 import { useCallback, useState } from "react";
 import type { JSX } from "react";
 import { ActivityIndicator, Dimensions, Platform, Pressable, StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native";
@@ -178,15 +176,18 @@ function Button({
     const handlePressIn = useCallback(() => setPressed(true), []);
     const handlePressOut = useCallback(() => setPressed(false), []);
 
+    // Validate shadow key
+    const validatedShadow = shadow ? validateShadowKey(shadow, theme) : undefined;
+
     // Determine shadow style from theme
     let shadowStyle: ViewStyle = {};
     if (
-        shadow &&
+        validatedShadow &&
         buttonColor !== 'transparent' &&
         theme.shadows &&
-        Object.prototype.hasOwnProperty.call(theme.shadows, shadow)
+        theme.shadows[validatedShadow]
     ) {
-        const shadowDef = (theme.shadows as typeof SHADOWS)[shadow as keyof typeof SHADOWS];
+        const shadowDef = theme.shadows[validatedShadow];
         shadowStyle = Platform.select({
             ios: (shadowDef.ios || {}) as ViewStyle,
             android: (shadowDef.android || {}) as ViewStyle,

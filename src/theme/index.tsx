@@ -7,6 +7,9 @@ import GALIO_SIZES from './sizes';
 
 export type ThemeMode = 'light' | 'dark' | 'auto';
 
+// Valid shadow keys from SHADOWS object
+export type ShadowKey = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'default' | 'strong';
+
 // Semantic color type
 export type SemanticColors = typeof LIGHT_COLORS;
 
@@ -70,6 +73,30 @@ function deepMerge<T extends object>(target: T, source: Partial<T>): T {
 function getSemanticColors(mode: 'light' | 'dark', customColors?: Partial<SemanticColors>): SemanticColors {
     const baseColors = mode === 'dark' ? DARK_COLORS : LIGHT_COLORS;
     return customColors ? deepMerge(baseColors, customColors) : baseColors;
+}
+
+/**
+ * Validate that a shadow key exists in the theme shadows
+ * @param key - The shadow key to validate
+ * @param theme - The theme object containing shadows
+ * @returns The validated shadow key or 'md' as fallback
+ */
+export function validateShadowKey(key: string | undefined, theme: GalioTheme): ShadowKey {
+    if (!key) return 'md';
+    
+    const validKeys: ShadowKey[] = ['xs', 'sm', 'md', 'lg', 'xl', 'default', 'strong'];
+    
+    if (validKeys.includes(key as ShadowKey) && theme.shadows && theme.shadows[key as ShadowKey]) {
+        return key as ShadowKey;
+    }
+    
+    if (process.env.NODE_ENV !== 'production') {
+        console.warn(
+            `[Galio] Invalid shadow key "${key}". Valid keys are: ${validKeys.join(', ')}. Falling back to "md".`
+        );
+    }
+    
+    return 'md';
 }
 
 const DEFAULT_THEME: GalioTheme = {
