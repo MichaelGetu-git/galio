@@ -109,12 +109,10 @@ function Avatar({
     if (shadow && shadow !== 'none') {
         const shadowDef = theme.shadows?.[shadow] || {};
         shadowStyle = Platform.select({
-            ios: shadowDef.ios || {},
-            android: shadowDef.android || {},
+            ios: (shadowDef.ios || {}) as ViewStyle,
+            android: (shadowDef.android || {}) as ViewStyle,
+            web: (shadowDef.web || {}) as ViewStyle,
         }) || {};
-        if (Platform.OS === 'web' && shadowDef.web) {
-            shadowStyle = { ...shadowDef.web };
-        }
     }
 
     // Only apply overflow: 'hidden' if no shadow is present

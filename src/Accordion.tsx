@@ -263,12 +263,10 @@ function Accordion({
     if (shadow && shadow !== 'none') {
         const shadowDef = theme.shadows?.[shadow] || {};
         shadowStyle = Platform.select({
-            ios: shadowDef.ios || {},
-            android: shadowDef.android || {},
+            ios: (shadowDef.ios || {}) as ViewStyle,
+            android: (shadowDef.android || {}) as ViewStyle,
+            web: (shadowDef.web || {}) as ViewStyle,
         }) || {};
-        if (Platform.OS === 'web' && shadowDef.web) {
-            shadowStyle = { ...shadowDef.web };
-        }
     }
 
     const defaultContainerStyle: ViewStyle = {
@@ -325,8 +323,8 @@ const styles = (theme: ReturnType<typeof useTheme>, colors: ReturnType<typeof us
     const baseShadow = Platform.select({
         ios: shadow.ios,
         android: shadow.android,
+        web: shadow.web as any,
     });
-    const webShadow = Platform.OS === 'web' ? shadow.web : {};
     return StyleSheet.create({
         container: {
             flex: 1,
@@ -335,7 +333,6 @@ const styles = (theme: ReturnType<typeof useTheme>, colors: ReturnType<typeof us
             padding,
             backgroundColor: colors.surface,
             ...baseShadow,
-            ...webShadow,
         },
         header: {
             padding: headerPadding,

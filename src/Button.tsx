@@ -186,10 +186,12 @@ function Button({
         theme.shadows &&
         Object.prototype.hasOwnProperty.call(theme.shadows, shadow)
     ) {
-        const platform = Platform.OS;
-        if (platform === 'ios' || platform === 'android' || platform === 'web') {
-            shadowStyle = (theme.shadows as typeof SHADOWS)[shadow as keyof typeof SHADOWS][platform] || {};
-        }
+        const shadowDef = (theme.shadows as typeof SHADOWS)[shadow as keyof typeof SHADOWS];
+        shadowStyle = Platform.select({
+            ios: (shadowDef.ios || {}) as ViewStyle,
+            android: (shadowDef.android || {}) as ViewStyle,
+            web: (shadowDef.web || {}) as ViewStyle,
+        }) || {};
     }
 
     // Map size values to widths (legacy values supported, will be removed in future)

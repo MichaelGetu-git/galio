@@ -294,12 +294,8 @@ function getSemanticShadowStyles(theme: ReturnType<typeof useTheme>, level: Shad
       ...(def.android || {}),
       shadowColor: shadowColor || (def.android && def.android.shadowColor) || neutralShadowColor,
     } as ViewStyle,
-    web: {},
+    web: def.web || {},
   }) || {};
-  // For web, merge boxShadow if present
-  if (Platform.OS === 'web' && def.web) {
-    return { ...nativeShadow, ...def.web };
-  }
   // Always add elevation for Android
   if (Platform.OS === 'android') {
     const elevation = (def.android && typeof def.android.elevation === 'number') ? def.android.elevation : 0;
