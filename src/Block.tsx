@@ -1,9 +1,13 @@
 import React from 'react';
 import type { JSX } from 'react';
 import { ViewStyle, View, Platform } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView as SafeAreaViewNative } from 'react-native-safe-area-context';
 import { useTheme, useColors } from './theme';
 import { registerInterop } from './helpers/interop';
+
+// Web-safe SafeAreaView: on web, SafeAreaView may not behave as expected
+// Use regular View on web, SafeAreaView on iOS/Android for proper safe area handling
+const SafeAreaView = Platform.OS === 'web' ? View : SafeAreaViewNative;
 
 // Enhanced type definitions for better type safety
 
@@ -162,7 +166,7 @@ function Block(props: BlockProps): JSX.Element {
     customStyle: style,
   });
 
-  // Render with SafeAreaView if needed
+  // Render with SafeAreaView if needed (platform-aware)
   if (safe) {
     return (
       <SafeAreaView style={blockStyles} {...rest}>
@@ -281,15 +285,16 @@ function getSemanticShadowStyles(theme: ReturnType<typeof useTheme>, level: Shad
   if (level === 'none') return {};
   const def = theme.shadows?.[level as keyof typeof theme.shadows] || {};
   const neutralShadowColor = '#b0b0b0';
-  let nativeShadow = Platform.select({
+  let nativeShadow: ViewStyle = Platform.select({
     ios: {
       ...(def.ios || {}),
       shadowColor: shadowColor || (def.ios && def.ios.shadowColor) || neutralShadowColor,
-    },
+    } as ViewStyle,
     android: {
       ...(def.android || {}),
       shadowColor: shadowColor || (def.android && def.android.shadowColor) || neutralShadowColor,
-    },
+    } as ViewStyle,
+    web: {},
   }) || {};
   // For web, merge boxShadow if present
   if (Platform.OS === 'web' && def.web) {
