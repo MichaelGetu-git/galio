@@ -159,20 +159,27 @@ export function useColors(): SemanticColors {
  */
 export function GalioProvider({ mode = 'auto', theme = {}, children }: GalioProviderProps): JSX.Element {
     const systemColorScheme = useColorScheme();
+    const [isMounted, setIsMounted] = useState(false);
     const [currentMode, setCurrentMode] = useState<'light' | 'dark'>(() => {
-        if (mode === 'auto') {
-            return systemColorScheme === 'dark' ? 'dark' : 'light';
-        }
-        return mode;
+        // During SSR and initial client render, use 'light' as consistent fallback
+        // This ensures server and client match before hydration
+        return mode === 'dark' ? 'dark' : 'light';
     });
 
+    // Defer system color scheme detection until after hydration
     useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (!isMounted) return;
+
         if (mode === 'auto') {
             setCurrentMode(systemColorScheme === 'dark' ? 'dark' : 'light');
         } else {
             setCurrentMode(mode);
         }
-    }, [mode, systemColorScheme]);
+    }, [mode, systemColorScheme, isMounted]);
 
     const providerTheme = useMemo<GalioTheme>(() => {
         try {
