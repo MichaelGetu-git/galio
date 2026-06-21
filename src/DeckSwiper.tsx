@@ -124,7 +124,7 @@ function DeckSwiper({
                 { rotate: `${rotate}deg` },
                 { translateX: translateX.value },
                 { translateY: translateY.value },
-            ],
+            ] as any,
         };
     });
 
@@ -143,7 +143,7 @@ function DeckSwiper({
                 Extrapolation.CLAMP
             ),
         }],
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
     }));
 
     const renderComponents = useCallback((componentsArray: React.ReactNode[]) => {
@@ -158,7 +158,7 @@ function DeckSwiper({
                         <Animated.View
                             style={[
                                 focusedCardStyle,
-                                StyleSheet.absoluteFillObject,
+                                StyleSheet.absoluteFill,
                                 {
                                     backgroundColor: cardBackgroundColor || colors.surface,
                                     borderRadius: borderRadius ?? theme.sizes.CARD_BORDER_RADIUS,

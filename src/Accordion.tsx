@@ -8,7 +8,7 @@ import Animated, {
 import Text from "./Text";
 import Block from "./Block";
 import Icon from "./Icon";
-import { useTheme, useColors } from "./theme";
+import { useTheme, useColors, validateShadowKey } from "./theme";
 import { registerInterop } from "./helpers/interop";
 
 const { width } = Dimensions.get('screen');
@@ -238,8 +238,8 @@ function Accordion({
     const colors = useColors();
     const [selected, setSelected] = useState<number | undefined>(opened);
 
-    // Validate shadow key
-    const validatedShadow = validateShadowKey(shadow, theme);
+    // Validate shadow key (handle 'none' case before validation)
+    const validatedShadow = shadow === 'none' ? 'none' : validateShadowKey(shadow, theme);
 
     const defaultHeaderStyle: ViewStyle = {
         padding: theme.sizes?.BASE ?? 16,
@@ -264,11 +264,11 @@ function Accordion({
 
     let shadowStyle: ViewStyle = {};
     if (validatedShadow && validatedShadow !== 'none') {
-        const shadowDef = theme.shadows?.[validatedShadow as keyof typeof theme.shadows] || {};
+        const shadowDef = theme.shadows?.[validatedShadow as keyof typeof theme.shadows];
         shadowStyle = Platform.select({
-            ios: (shadowDef.ios || {}) as ViewStyle,
-            android: (shadowDef.android || {}) as ViewStyle,
-            web: (shadowDef.web || {}) as ViewStyle,
+            ios: (shadowDef?.ios || {}) as ViewStyle,
+            android: (shadowDef?.android || {}) as ViewStyle,
+            web: (shadowDef?.web || {}) as ViewStyle,
         }) || {};
     }
 

@@ -110,11 +110,11 @@ function Avatar({
     // If shadow prop is set and not 'none', apply theme shadow for current platform
     let shadowStyle: ViewStyle = {};
     if (validatedShadow && validatedShadow !== 'none') {
-        const shadowDef = theme.shadows?.[validatedShadow as keyof typeof theme.shadows] || {};
+        const shadowDef = theme.shadows?.[validatedShadow as keyof typeof theme.shadows];
         shadowStyle = Platform.select({
-            ios: (shadowDef.ios || {}) as ViewStyle,
-            android: (shadowDef.android || {}) as ViewStyle,
-            web: (shadowDef.web || {}) as ViewStyle,
+            ios: (shadowDef?.ios || {}) as ViewStyle,
+            android: (shadowDef?.android || {}) as ViewStyle,
+            web: (shadowDef?.web || {}) as ViewStyle,
         }) || {};
     }
 
