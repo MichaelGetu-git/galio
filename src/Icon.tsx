@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import type { JSX } from 'react';
-import { Fontisto } from '@react-native-vector-icons/fontisto';
+import Fontisto from '@expo/vector-icons/Fontisto';
 import { createIconSetFromIcoMoon } from '@expo/vector-icons';
 import { registerInterop } from './helpers/interop';
 

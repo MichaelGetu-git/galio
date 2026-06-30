@@ -1,16 +1,20 @@
 import React from 'react';
 import type { JSX } from 'react';
 import { ViewStyle, View, Platform } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useTheme, useColors } from './theme';
+import { SafeAreaView as SafeAreaViewNative } from 'react-native-safe-area-context';
+import { useTheme, useColors, validateShadowKey } from './theme';
 import { registerInterop } from './helpers/interop';
+
+// Web-safe SafeAreaView: on web, SafeAreaView may not behave as expected
+// Use regular View on web, SafeAreaView on iOS/Android for proper safe area handling
+const SafeAreaView = Platform.OS === 'web' ? View : SafeAreaViewNative;
 
 // Enhanced type definitions for better type safety
 
 /**
  * Semantic shadow levels for cross-platform consistency.
  */
-type ShadowLevel = 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+type ShadowLevel = 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'default' | 'strong';
 type SpaceType = 'between' | 'around' | 'evenly' | 'left' | 'right' | 'center' | null;
 
 interface BlockProps {
@@ -124,20 +128,23 @@ function Block(props: BlockProps): JSX.Element {
   } = props;
 
   // Backward compatibility: coerce boolean shadow to semantic value
-  let shadow = shadowProp;
-  if (typeof shadow === 'boolean') {
-    if (shadow) {
-      shadow = 'md';
-      if (process.env.NODE_ENV !== 'production') {
-        // eslint-disable-next-line no-console
-        console.warn('[Block] Passing shadow as boolean is deprecated. Use semantic values (xs, sm, md, lg, xl) instead.');
-      }
-    } else {
-      shadow = undefined;
+  let shadow: ShadowLevel | undefined;
+  if (typeof shadowProp === 'boolean') {
+    shadow = shadowProp ? 'md' : undefined;
+    if (process.env.NODE_ENV !== 'production' && shadowProp) {
+      // eslint-disable-next-line no-console
+      console.warn('[Block] Passing shadow as boolean is deprecated. Use semantic values (xs, sm, md, lg, xl) instead.');
     }
+  } else {
+    shadow = shadowProp;
   }
   const theme = useTheme();
   const colors = useColors();
+
+  // Validate shadow key
+  if (typeof shadow === 'string' && shadow !== 'none') {
+    shadow = validateShadowKey(shadow, theme);
+  }
 
   // Build styles using composition pattern for better maintainability
   const blockStyles = useBlockStyles({
@@ -162,7 +169,7 @@ function Block(props: BlockProps): JSX.Element {
     customStyle: style,
   });
 
-  // Render with SafeAreaView if needed
+  // Render with SafeAreaView if needed (platform-aware)
   if (safe) {
     return (
       <SafeAreaView style={blockStyles} {...rest}>
@@ -279,25 +286,22 @@ function useBlockStyles({
 // Semantic shadow style builder
 function getSemanticShadowStyles(theme: ReturnType<typeof useTheme>, level: ShadowLevel, shadowColor?: string | null) {
   if (level === 'none') return {};
-  const def = theme.shadows?.[level as keyof typeof theme.shadows] || {};
+  const def = theme.shadows?.[level as keyof typeof theme.shadows];
   const neutralShadowColor = '#b0b0b0';
-  let nativeShadow = Platform.select({
+  let nativeShadow: ViewStyle = Platform.select({
     ios: {
-      ...(def.ios || {}),
-      shadowColor: shadowColor || (def.ios && def.ios.shadowColor) || neutralShadowColor,
-    },
+      ...(def?.ios || {}),
+      shadowColor: shadowColor || (def?.ios && def.ios.shadowColor) || neutralShadowColor,
+    } as ViewStyle,
     android: {
-      ...(def.android || {}),
-      shadowColor: shadowColor || (def.android && def.android.shadowColor) || neutralShadowColor,
-    },
+      ...(def?.android || {}),
+      shadowColor: shadowColor || (def?.android && def.android.shadowColor) || neutralShadowColor,
+    } as ViewStyle,
+    web: def?.web || {},
   }) || {};
-  // For web, merge boxShadow if present
-  if (Platform.OS === 'web' && def.web) {
-    return { ...nativeShadow, ...def.web };
-  }
   // Always add elevation for Android
   if (Platform.OS === 'android') {
-    const elevation = (def.android && typeof def.android.elevation === 'number') ? def.android.elevation : 0;
+    const elevation = (def?.android && typeof def.android.elevation === 'number') ? def.android.elevation : 0;
     nativeShadow = { ...nativeShadow, elevation };
   }
   return nativeShadow;

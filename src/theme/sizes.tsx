@@ -4,7 +4,6 @@ import { BASE, STATIC_SIZES } from './staticSizes';
 
 const { height, width } = Dimensions.get('screen');
 
-
 const SIZES = {
   ...STATIC_SIZES,
   CARD_WIDTH: width - (BASE * 2),

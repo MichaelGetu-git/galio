@@ -1,6 +1,4 @@
-import { useTheme, useColors } from "./theme";
-import type { SHADOWS } from "./theme/colors";
-type ShadowKey = keyof typeof SHADOWS;
+import { useTheme, useColors, validateShadowKey, type ShadowKey } from "./theme";
 import { useCallback, useState } from "react";
 import type { JSX } from "react";
 import { ActivityIndicator, Dimensions, Platform, Pressable, StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native";
@@ -178,18 +176,23 @@ function Button({
     const handlePressIn = useCallback(() => setPressed(true), []);
     const handlePressOut = useCallback(() => setPressed(false), []);
 
+    // Validate shadow key
+    const validatedShadow = shadow ? validateShadowKey(shadow, theme) : undefined;
+
     // Determine shadow style from theme
     let shadowStyle: ViewStyle = {};
     if (
-        shadow &&
+        validatedShadow &&
         buttonColor !== 'transparent' &&
         theme.shadows &&
-        Object.prototype.hasOwnProperty.call(theme.shadows, shadow)
+        theme.shadows[validatedShadow]
     ) {
-        const platform = Platform.OS;
-        if (platform === 'ios' || platform === 'android' || platform === 'web') {
-            shadowStyle = (theme.shadows as typeof SHADOWS)[shadow as keyof typeof SHADOWS][platform] || {};
-        }
+        const shadowDef = theme.shadows[validatedShadow];
+        shadowStyle = Platform.select({
+            ios: (shadowDef.ios || {}) as ViewStyle,
+            android: (shadowDef.android || {}) as ViewStyle,
+            web: (shadowDef.web || {}) as ViewStyle,
+        }) || {};
     }
 
     // Map size values to widths (legacy values supported, will be removed in future)
