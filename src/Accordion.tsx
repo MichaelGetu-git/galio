@@ -238,7 +238,8 @@ function Accordion({
     // Use semantic shadow prop for all platforms
     let shadowStyle: ViewStyle = {};
     if (shadow && shadow !== 'none') {
-        const shadowDef = theme.shadows?.[shadow] || {};
+        const shadowDef: { ios?: ViewStyle; android?: ViewStyle; web?: ViewStyle } =
+            (theme.shadows?.[shadow as keyof typeof theme.shadows] || {}) as any;
         shadowStyle = Platform.select({
             ios: shadowDef.ios || {},
             android: shadowDef.android || {},
@@ -287,7 +288,7 @@ const styles = (theme: ReturnType<typeof useTheme>, colors: ReturnType<typeof us
     const headerPadding = 6;
     const contentPadding = 10;
     // Use semantic shadow (md) for Accordion
-    const shadow = theme?.shadows?.md ?? theme?.shadows?.default ?? {
+    const shadow = (theme?.shadows?.md ?? theme?.shadows?.default ?? {
         ios: {
             shadowColor: colors.border,
             shadowOffset: { width: 0, height: 1 },
@@ -300,12 +301,12 @@ const styles = (theme: ReturnType<typeof useTheme>, colors: ReturnType<typeof us
         web: {
             boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.2)',
         },
-    };
+    }) as { ios?: ViewStyle; android?: ViewStyle; web?: ViewStyle };
     const baseShadow = Platform.select({
         ios: shadow.ios,
         android: shadow.android,
     });
-    const webShadow = Platform.OS === 'web' ? shadow.web : {};
+    const webShadow = Platform.OS === 'web' ? (shadow.web || {}) : {};
     return StyleSheet.create({
         container: {
             flex: 1,

@@ -2,6 +2,9 @@
 
 // Core Components
 export { default as Accordion } from './Accordion';
+export { default as BottomSheet } from './BottomSheet';
+export { default as Popover } from './Popover';
+export { default as MediaGallery } from './MediaGallery';
 export { default as Avatar } from './Avatar';
 export { default as Block } from './Block';
 export { default as Card } from './Card';

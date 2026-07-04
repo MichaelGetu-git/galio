@@ -61,7 +61,7 @@ function DeckSwiper({
                 { rotate },
                 { translateX: translateX.value },
                 { translateY: translateY.value }
-            ]
+            ] as any,
         };
     });
 
@@ -80,8 +80,12 @@ function DeckSwiper({
         );
         return {
             opacity,
-            transform: [{ scale }],
-            ...StyleSheet.absoluteFillObject
+            transform: [{ scale }] as any,
+            position: 'absolute' as const,
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
         };
     });
 
@@ -136,7 +140,13 @@ function DeckSwiper({
                         <Animated.View
                             style={[
                                 rotateAndTranslate,
-                                StyleSheet.absoluteFillObject,
+                                {
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                },
                                 {
                                     backgroundColor: cardBackgroundColor || colors.surface,
                                     borderRadius: borderRadius ?? theme.sizes.CARD_BORDER_RADIUS,
