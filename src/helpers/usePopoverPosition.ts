@@ -1,7 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
-import { Dimensions, LayoutChangeEvent, View } from 'react-native';
+import { LayoutChangeEvent, View } from 'react-native';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const EDGE_PADDING = 8;
 
 export type Placement = 'auto' | 'top' | 'bottom' | 'left' | 'right';
@@ -43,16 +42,22 @@ export function usePopoverPosition(preferred: Placement, offset: number) {
   }, []);
 
   const calculatePosition = useCallback(
-    (popoverWidth: number, popoverHeight: number, layout?: TriggerLayout): PositionResult => {
+    (
+      popoverWidth: number,
+      popoverHeight: number,
+      screenWidth: number,
+      screenHeight: number,
+      layout?: TriggerLayout
+    ): PositionResult => {
       const rect = layout || triggerLayout;
       if (!rect) {
         return { placement: preferred, top: 0, left: 0 };
       }
 
       const spaceAbove = rect.y;
-      const spaceBelow = SCREEN_HEIGHT - (rect.y + rect.height);
+      const spaceBelow = screenHeight - (rect.y + rect.height);
       const spaceLeft = rect.x;
-      const spaceRight = SCREEN_WIDTH - (rect.x + rect.width);
+      const spaceRight = screenWidth - (rect.x + rect.width);
 
       let placement: Placement = preferred;
       if (preferred === 'auto') {
@@ -88,8 +93,8 @@ export function usePopoverPosition(preferred: Placement, offset: number) {
       }
 
       // Clamp so it never clips off-screen
-      left = Math.max(EDGE_PADDING, Math.min(left, SCREEN_WIDTH - popoverWidth - EDGE_PADDING));
-      top = Math.max(EDGE_PADDING, Math.min(top, SCREEN_HEIGHT - popoverHeight - EDGE_PADDING));
+      left = Math.max(EDGE_PADDING, Math.min(left, screenWidth - popoverWidth - EDGE_PADDING));
+      top = Math.max(EDGE_PADDING, Math.min(top, screenHeight - popoverHeight - EDGE_PADDING));
 
       return { placement, top, left };
     },

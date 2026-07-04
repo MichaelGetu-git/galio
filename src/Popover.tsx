@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Modal, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { Modal, StyleSheet, TouchableWithoutFeedback, useWindowDimensions, View } from 'react-native';
 import { useTheme, useColors } from './theme';
 import { registerInterop } from './helpers/interop';
 import { Placement, usePopoverPosition } from './helpers/usePopoverPosition';
@@ -27,8 +27,10 @@ function Popover({
 }: PopoverProps): React.ReactElement {
   const theme = useTheme();
   const colors = useColors();
-  const [position, setPosition] = useState({ top: -9999, left: -9999 });
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+  const [position, setPosition] = useState({ top: 0, left: 0 });
   const [placement, setPlacement] = useState<Placement>('bottom');
+  const [measured, setMeasured] = useState(false);
   const measuredRef = useRef(false);
 
   const { triggerRef, onTriggerLayout, measureTrigger, calculatePosition } =
@@ -42,21 +44,22 @@ function Popover({
 
       measureTrigger().then((layout) => {
         if (layout) {
-          const result = calculatePosition(width, height, layout);
+          const result = calculatePosition(width, height, screenWidth, screenHeight, layout);
           setPosition({ top: result.top, left: result.left });
           setPlacement(result.placement);
           measuredRef.current = true;
+          setMeasured(true);
         }
       });
     },
-    [measureTrigger, calculatePosition]
+    [measureTrigger, calculatePosition, screenWidth, screenHeight]
   );
 
-  // Reset position tracker when visibility changes
+  // Reset when visibility changes
   useEffect(() => {
     if (visible) {
       measuredRef.current = false;
-      setPosition({ top: -9999, left: -9999 });
+      setMeasured(false);
     }
   }, [visible]);
 
@@ -132,6 +135,7 @@ function Popover({
                       top: position.top,
                       left: position.left,
                       backgroundColor: colors.background,
+                      opacity: measured ? 1 : 0,
                     },
                   ]}
                   onLayout={handlePopoverLayout}

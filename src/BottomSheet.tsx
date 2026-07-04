@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   AccessibilityInfo,
-  Dimensions,
   findNodeHandle,
   Modal,
   StyleSheet,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import Animated, {
@@ -23,7 +23,6 @@ import { useTheme, useColors } from './theme';
 import { registerInterop } from './helpers/interop';
 import { useSnapPoints } from './helpers/useSnapPoints';
 
-const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const HANDLE_HEIGHT = 24;
 
 export interface BottomSheetProps {
@@ -55,7 +54,8 @@ function BottomSheet({
 }: BottomSheetProps): React.ReactElement | null {
   const theme = useTheme();
   const colors = useColors();
-  const resolvedSnapPoints = useSnapPoints(snapPoints);
+  const { height: SCREEN_HEIGHT } = useWindowDimensions();
+  const resolvedSnapPoints = useSnapPoints(snapPoints, SCREEN_HEIGHT);
 
   // Clamp initial index
   const snapIndex = Math.min(initialSnapIndex, resolvedSnapPoints.length - 1);

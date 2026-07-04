@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
-  Dimensions,
   FlatList,
   Modal,
   Pressable,
   StyleSheet,
   Text,
+  useWindowDimensions,
   View,
   ViewToken,
 } from 'react-native';
@@ -23,7 +23,7 @@ import { useTheme, useColors } from './theme';
 import { registerInterop } from './helpers/interop';
 import { VideoPlayer } from './helpers/VideoPlayer';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+
 
 export interface MediaItem {
   uri: string;
@@ -52,6 +52,7 @@ function ZoomableImage({
   enableZoom: boolean;
   enableSwipeToDismiss: boolean;
 }) {
+  const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = useWindowDimensions();
   const scale = useSharedValue(1);
   const savedScale = useSharedValue(1);
   const translateX = useSharedValue(0);
@@ -238,6 +239,7 @@ function ZoomableVideo({
   enableZoom: boolean;
   enableSwipeToDismiss: boolean;
 }) {
+  const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = useWindowDimensions();
   const scale = useSharedValue(1);
   const savedScale = useSharedValue(1);
   const translateX = useSharedValue(0);
@@ -349,6 +351,7 @@ function MediaGallery({
 }: MediaGalleryProps): React.ReactElement | null {
   const theme = useTheme();
   const colors = useColors();
+  const { width: SCREEN_WIDTH } = useWindowDimensions();
   const flatListRef = useRef<FlatList>(null);
   const [activeIndex, setActiveIndex] = useState(initialIndex);
 
