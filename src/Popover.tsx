@@ -92,11 +92,26 @@ function Popover({
     return shared;
   };
 
+  // Clone trigger with accessibility state
+  const triggerProps = trigger.props as Record<string, any>;
+  const accessibleTrigger = React.cloneElement(trigger, {
+    accessibilityState: {
+      ...(triggerProps.accessibilityState || {}),
+      expanded: visible,
+    },
+    accessibilityHint: triggerProps.accessibilityHint || 'Double tap to show popover',
+  } as any);
+
   return (
     <View>
       {/* Trigger wrapper for measurement */}
-      <View ref={triggerRef} onLayout={onTriggerLayout} collapsable={false}>
-        {trigger}
+      <View
+        ref={triggerRef}
+        onLayout={onTriggerLayout}
+        collapsable={false}
+        importantForAccessibility="no-hide-descendants"
+      >
+        {accessibleTrigger}
       </View>
 
       {visible && (
@@ -107,7 +122,7 @@ function Popover({
           onRequestClose={onClose}
           statusBarTranslucent
         >
-          <TouchableWithoutFeedback onPress={onClose}>
+          <TouchableWithoutFeedback onPress={onClose} accessibilityLabel="Close popover">
             <View style={styles(theme).overlay}>
               <TouchableWithoutFeedback>
                 <View
@@ -120,7 +135,8 @@ function Popover({
                     },
                   ]}
                   onLayout={handlePopoverLayout}
-                  accessibilityLabel="Popover"
+                  accessibilityLabel="Popover content"
+                  accessibilityHint="Double tap outside to close"
                 >
                   <View style={buildArrowStyle()} />
                   {children}

@@ -216,6 +216,9 @@ function ZoomableImage({
           source={{ uri }}
           style={[{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }, imageAnimatedStyle]}
           resizeMode="contain"
+          accessibilityLabel="Image"
+          accessibilityRole="image"
+          accessibilityHint="Pinch to zoom. Double tap to zoom in and out. Swipe down to close."
         />
       </Animated.View>
     </GestureDetector>
@@ -289,13 +292,22 @@ function MediaGallery({
         />
 
         {/* Close button */}
-        <Pressable style={componentStyles(theme).closeButton} onPress={onClose}>
+        <Pressable
+          style={componentStyles(theme).closeButton}
+          onPress={onClose}
+          accessibilityLabel="Close gallery"
+          accessibilityHint="Double tap to close"
+        >
           <Text style={componentStyles(theme).closeText}>✕</Text>
         </Pressable>
 
         {/* Page indicator */}
         {items.length > 1 && (
-          <View style={componentStyles(theme).pageIndicator}>
+          <View
+            style={componentStyles(theme).pageIndicator}
+            accessibilityLabel={`Image ${activeIndex + 1} of ${items.length}`}
+            accessibilityRole="text"
+          >
             <Text style={componentStyles(theme).pageText}>
               {activeIndex + 1} / {items.length}
             </Text>

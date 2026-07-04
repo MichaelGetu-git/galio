@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import {
+  AccessibilityInfo,
   Dimensions,
+  findNodeHandle,
   Modal,
-  Platform,
   StyleSheet,
   View,
 } from 'react-native';
@@ -66,6 +67,19 @@ function BottomSheet({
   const contextY = useSharedValue(0);
 
   // Keyboard
+  const sheetRef = useRef<View>(null);
+  const snapCount = resolvedSnapPoints.length;
+
+  // Announce to screen reader when sheet opens
+  useEffect(() => {
+    if (visible && sheetRef.current) {
+      const tag = findNodeHandle(sheetRef.current);
+      if (tag) {
+        AccessibilityInfo.announceForAccessibility('Bottom sheet opened');
+      }
+    }
+  }, [visible]);
+
   const keyboard = useAnimatedKeyboard();
   const keyboardHeight = useDerivedValue(() =>
     keyboard.state.value === KeyboardState.OPEN ? keyboard.height.value : 0
@@ -172,22 +186,51 @@ function BottomSheet({
         {/* Overlay */}
         {enableOverlay && (
           <GestureDetector gesture={Gesture.Tap().onEnd(() => onClose?.())}>
-            <Animated.View style={[styles(theme).overlay, overlayStyle]} />
+            <Animated.View
+              style={[styles(theme).overlay, overlayStyle]}
+              accessibilityLabel="Close bottom sheet"
+              accessibilityHint="Double tap to close"
+              accessible
+            />
           </GestureDetector>
         )}
 
         {/* Sheet */}
         <GestureDetector gesture={panGesture}>
           <Animated.View
+            ref={sheetRef}
             style={[
               styles(theme).sheet,
               { height: sheetHeight.value + HANDLE_HEIGHT },
               sheetStyle,
             ]}
+            accessibilityLabel="Bottom sheet"
+            accessibilityHint="Swipe up or down to resize. Double tap the handle to adjust snap position."
+            importantForAccessibility="yes"
           >
             {/* Handle */}
-            <View style={[styles(theme).handleContainer]}>
-              <View style={[styles(theme).handle]} />
+            <View
+              style={[styles(theme).handleContainer]}
+              accessibilityRole="adjustable"
+              accessibilityLabel="Sheet position"
+              accessibilityHint={`Drag up or down. ${snapCount} snap positions available.`}
+              accessibilityActions={[
+                { name: 'increment', label: 'expand' },
+                { name: 'decrement', label: 'collapse' },
+              ]}
+              onAccessibilityAction={(event) => {
+                if (event.nativeEvent.actionName === 'increment') {
+                  const next = Math.min(currentSnapIndex.value + 1, snapCount - 1);
+                  currentSnapIndex.value = next;
+                  translateY.value = withSpring(resolvedSnapPoints[next]);
+                } else if (event.nativeEvent.actionName === 'decrement') {
+                  const prev = Math.max(currentSnapIndex.value - 1, 0);
+                  currentSnapIndex.value = prev;
+                  translateY.value = withSpring(resolvedSnapPoints[prev]);
+                }
+              }}
+            >
+              <View style={[styles(theme).handle]} accessible={false} />
             </View>
 
             {/* Scrollable content */}
