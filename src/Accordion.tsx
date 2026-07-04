@@ -8,7 +8,7 @@ import Animated, {
 import Text from "./Text";
 import Block from "./Block";
 import Icon from "./Icon";
-import { useTheme, useColors } from "./theme";
+import { useTheme, useColors, validateShadowKey } from "./theme";
 import { registerInterop } from "./helpers/interop";
 
 const { width } = Dimensions.get('screen');
@@ -212,7 +212,7 @@ interface MainAccordionProps {
     listStyle?: ViewStyle;
     style?: ViewStyle;
     titleStyle?: TextStyle;
-    shadow?: 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+    shadow?: 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'default' | 'strong';
     className?: string;
     headerClassName?: string;
     contentClassName?: string;
@@ -238,6 +238,9 @@ function Accordion({
     const colors = useColors();
     const [selected, setSelected] = useState<number | undefined>(opened);
 
+    // Validate shadow key (handle 'none' case before validation)
+    const validatedShadow = shadow === 'none' ? 'none' : validateShadowKey(shadow, theme);
+
     const defaultHeaderStyle: ViewStyle = {
         padding: theme.sizes?.BASE ?? 16,
         flexDirection: 'row',
@@ -260,15 +263,13 @@ function Accordion({
     };
 
     let shadowStyle: ViewStyle = {};
-    if (shadow && shadow !== 'none') {
-        const shadowDef = theme.shadows?.[shadow] || {};
+    if (validatedShadow && validatedShadow !== 'none') {
+        const shadowDef = theme.shadows?.[validatedShadow as keyof typeof theme.shadows];
         shadowStyle = Platform.select({
-            ios: shadowDef.ios || {},
-            android: shadowDef.android || {},
+            ios: (shadowDef?.ios || {}) as ViewStyle,
+            android: (shadowDef?.android || {}) as ViewStyle,
+            web: (shadowDef?.web || {}) as ViewStyle,
         }) || {};
-        if (Platform.OS === 'web' && shadowDef.web) {
-            shadowStyle = { ...shadowDef.web };
-        }
     }
 
     const defaultContainerStyle: ViewStyle = {
@@ -325,8 +326,8 @@ const styles = (theme: ReturnType<typeof useTheme>, colors: ReturnType<typeof us
     const baseShadow = Platform.select({
         ios: shadow.ios,
         android: shadow.android,
+        web: shadow.web as any,
     });
-    const webShadow = Platform.OS === 'web' ? shadow.web : {};
     return StyleSheet.create({
         container: {
             flex: 1,
@@ -335,7 +336,6 @@ const styles = (theme: ReturnType<typeof useTheme>, colors: ReturnType<typeof us
             padding,
             backgroundColor: colors.surface,
             ...baseShadow,
-            ...webShadow,
         },
         header: {
             padding: headerPadding,

@@ -5,3 +5,5 @@ yarn.lock
 .DS_Store
 *.log
 test
+dist/
+build/

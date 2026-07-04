@@ -1,7 +1,7 @@
 /****************************************************/
 /**** INSPIRED BY react-native-elements*************/
 /**************************************************/
-import { Fontisto } from '@react-native-vector-icons/fontisto';
+import Fontisto from '@expo/vector-icons/Fontisto';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Entypo from '@expo/vector-icons/Entypo';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
