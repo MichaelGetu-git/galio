@@ -21,6 +21,7 @@ import Animated, {
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useTheme, useColors } from './theme';
 import { registerInterop } from './helpers/interop';
+import { VideoPlayer } from './helpers/VideoPlayer';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -225,6 +226,118 @@ function ZoomableImage({
   );
 }
 
+// ── Single zoomable video ──
+function ZoomableVideo({
+  uri,
+  onClose,
+  enableZoom,
+  enableSwipeToDismiss,
+}: {
+  uri: string;
+  onClose?: () => void;
+  enableZoom: boolean;
+  enableSwipeToDismiss: boolean;
+}) {
+  const scale = useSharedValue(1);
+  const savedScale = useSharedValue(1);
+  const translateX = useSharedValue(0);
+  const translateY = useSharedValue(0);
+  const savedTranslateX = useSharedValue(0);
+  const savedTranslateY = useSharedValue(0);
+  const dismissY = useSharedValue(0);
+  const dismissProgress = useSharedValue(0);
+
+  const pinchGesture = useMemo(
+    () =>
+      Gesture.Pinch()
+        .onStart(() => { savedScale.value = scale.value; })
+        .onUpdate((e) => {
+          scale.value = Math.max(1, Math.min(savedScale.value * e.scale, 5));
+        })
+        .onEnd(() => {
+          savedScale.value = scale.value;
+          if (scale.value < 1.2) {
+            scale.value = withSpring(1);
+            savedScale.value = 1;
+            translateX.value = withSpring(0);
+            translateY.value = withSpring(0);
+            savedTranslateX.value = 0;
+            savedTranslateY.value = 0;
+          }
+        }),
+    [scale, savedScale, translateX, translateY, savedTranslateX, savedTranslateY]
+  );
+
+  const panGesture = useMemo(
+    () =>
+      Gesture.Pan()
+        .minPointers(1)
+        .onStart(() => {
+          savedTranslateX.value = translateX.value;
+          savedTranslateY.value = translateY.value;
+        })
+        .onUpdate((event) => {
+          if (scale.value > 1) {
+            translateX.value = savedTranslateX.value + event.translationX;
+            translateY.value = savedTranslateY.value + event.translationY;
+          } else if (enableSwipeToDismiss) {
+            dismissY.value = event.translationY;
+            dismissProgress.value = Math.min(1, Math.abs(event.translationY) / (SCREEN_HEIGHT / 2));
+          }
+        })
+        .onEnd((event) => {
+          if (scale.value > 1) {
+            savedTranslateX.value = translateX.value;
+            savedTranslateY.value = translateY.value;
+            const maxTx = ((scale.value - 1) * SCREEN_WIDTH) / 2;
+            const maxTy = ((scale.value - 1) * SCREEN_HEIGHT) / 2;
+            if (Math.abs(translateX.value) > maxTx) {
+              translateX.value = withSpring(Math.sign(translateX.value) * maxTx);
+            }
+            if (Math.abs(translateY.value) > maxTy) {
+              translateY.value = withSpring(Math.sign(translateY.value) * maxTy);
+            }
+          } else if (enableSwipeToDismiss) {
+            if (event.translationY > 80 && event.velocityY > 200) {
+              dismissY.value = withTiming(SCREEN_HEIGHT, { duration: 250 }, (finished) => {
+                if (finished && onClose) runOnJS(onClose)();
+              });
+            } else {
+              dismissY.value = withSpring(0);
+              dismissProgress.value = withSpring(0);
+            }
+          }
+        }),
+    [scale, savedScale, translateX, translateY, savedTranslateX, savedTranslateY, dismissY, dismissProgress, enableSwipeToDismiss, onClose]
+  );
+
+  const composed = useMemo(() => {
+    if (enableZoom) {
+      return Gesture.Simultaneous(panGesture, pinchGesture);
+    }
+    return panGesture;
+  }, [enableZoom, panGesture, pinchGesture]);
+
+  const containerAnimatedStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(dismissProgress.value, [0, 1], [1, 0.4], Extrapolation.CLAMP);
+    return { opacity };
+  });
+
+  return (
+    <GestureDetector gesture={composed}>
+      <Animated.View
+        style={[
+          styles.zoomContainer,
+          containerAnimatedStyle,
+          { width: SCREEN_WIDTH, height: SCREEN_HEIGHT },
+        ]}
+      >
+        <VideoPlayer uri={uri} style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }} />
+      </Animated.View>
+    </GestureDetector>
+  );
+}
+
 // ── Main MediaGallery ──
 function MediaGallery({
   visible,
@@ -250,14 +363,26 @@ function MediaGallery({
   const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 50 }).current;
 
   const renderItem = useCallback(
-    ({ item }: { item: MediaItem }) => (
-      <ZoomableImage
-        uri={item.uri}
-        onClose={onClose}
-        enableZoom={enableZoom}
-        enableSwipeToDismiss={enableSwipeToDismiss}
-      />
-    ),
+    ({ item }: { item: MediaItem }) => {
+      if (item.type === 'video') {
+        return (
+          <ZoomableVideo
+            uri={item.uri}
+            onClose={onClose}
+            enableZoom={enableZoom}
+            enableSwipeToDismiss={enableSwipeToDismiss}
+          />
+        );
+      }
+      return (
+        <ZoomableImage
+          uri={item.uri}
+          onClose={onClose}
+          enableZoom={enableZoom}
+          enableSwipeToDismiss={enableSwipeToDismiss}
+        />
+      );
+    },
     [onClose, enableZoom, enableSwipeToDismiss]
   );
 
