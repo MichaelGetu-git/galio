@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   FlatList,
   Modal,
@@ -13,15 +13,25 @@ import Animated, {
   Extrapolation,
   interpolate,
   runOnJS,
+  useAnimatedRef,
+  useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler';
+
+// Double-tap zoom target (MG-02).
+const DOUBLE_TAP_SCALE = 3;
 import { useTheme, useColors } from './theme';
 import { registerInterop } from './helpers/interop';
 import { VideoPlayer } from './helpers/VideoPlayer';
+import { GalleryImage, preloadImages } from './helpers/GalleryImage';
 
 
 
@@ -46,11 +56,13 @@ function ZoomableImage({
   onClose,
   enableZoom,
   enableSwipeToDismiss,
+  onZoomChange,
 }: {
   uri: string;
   onClose?: () => void;
   enableZoom: boolean;
   enableSwipeToDismiss: boolean;
+  onZoomChange?: (zoomed: boolean) => void;
 }) {
   const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = useWindowDimensions();
   const scale = useSharedValue(1);
@@ -61,6 +73,18 @@ function ZoomableImage({
   const savedTranslateY = useSharedValue(0);
   const dismissY = useSharedValue(0);
   const dismissProgress = useSharedValue(0);
+  const panStartX = useSharedValue(0);
+  const panStartY = useSharedValue(0);
+
+  // ── Isolate from paging (MG-01/03): the instant the image is zoomed, tell the
+  // parent to disable the horizontal FlatList so the pan drives the image instead
+  // of paging; re-enable the moment we're back to 1x. Driven on the UI thread. ──
+  useAnimatedReaction(
+    () => scale.value > 1,
+    (zoomed, prev) => {
+      if (zoomed !== prev && onZoomChange) runOnJS(onZoomChange)(zoomed);
+    }
+  );
 
   // ── Pinch ──
   const pinchGesture = useMemo(
@@ -92,8 +116,10 @@ function ZoomableImage({
     () =>
       Gesture.Tap()
         .numberOfTaps(2)
-        .onEnd(() => {
+        .maxDuration(250)
+        .onEnd((e) => {
           if (scale.value > 1) {
+            // Already zoomed → spring back to 1x, centered.
             scale.value = withSpring(1);
             savedScale.value = 1;
             translateX.value = withSpring(0);
@@ -101,11 +127,26 @@ function ZoomableImage({
             savedTranslateX.value = 0;
             savedTranslateY.value = 0;
           } else {
-            scale.value = withSpring(2.5);
-            savedScale.value = 2.5;
+            // Zoom IN, centering on the tapped point so it stays under the finger.
+            // The gesture view is SCREEN_WIDTH×SCREEN_HEIGHT and scales about its
+            // centre, so translate = (centre − focal) × (scale − 1), clamped to
+            // the enlarged image's bounds (the image is a SCREEN_WIDTH square).
+            const target = DOUBLE_TAP_SCALE;
+            const maxTx = ((target - 1) * SCREEN_WIDTH) / 2;
+            const maxTy = ((target - 1) * SCREEN_WIDTH) / 2;
+            let tx = (SCREEN_WIDTH / 2 - e.x) * (target - 1);
+            let ty = (SCREEN_HEIGHT / 2 - e.y) * (target - 1);
+            tx = Math.max(-maxTx, Math.min(tx, maxTx));
+            ty = Math.max(-maxTy, Math.min(ty, maxTy));
+            scale.value = withSpring(target);
+            savedScale.value = target;
+            translateX.value = withSpring(tx);
+            translateY.value = withSpring(ty);
+            savedTranslateX.value = tx;
+            savedTranslateY.value = ty;
           }
         }),
-    [scale, savedScale, translateX, translateY, savedTranslateX, savedTranslateY]
+    [scale, savedScale, translateX, translateY, savedTranslateX, savedTranslateY, SCREEN_WIDTH, SCREEN_HEIGHT]
   );
 
   // ── Single tap (for future overlay toggle) ──
@@ -124,6 +165,35 @@ function ZoomableImage({
     () =>
       Gesture.Pan()
         .minPointers(1)
+        .manualActivation(true)
+        .onTouchesDown((e) => {
+          if (e.allTouches.length > 0) {
+            panStartX.value = e.allTouches[0].x;
+            panStartY.value = e.allTouches[0].y;
+          }
+        })
+        .onTouchesMove((e, state) => {
+          if (e.allTouches.length === 0) return;
+          // Zoomed in: pan drives both axes freely around the enlarged image.
+          if (scale.value > 1) {
+            state.activate();
+            return;
+          }
+          // Unzoomed + dismiss disabled: yield everything to the FlatList.
+          if (!enableSwipeToDismiss) {
+            state.fail();
+            return;
+          }
+          // Unzoomed: a vertical drag arms swipe-to-dismiss; a horizontal drag
+          // fails this gesture so the horizontal FlatList pages between items.
+          const dx = Math.abs(e.allTouches[0].x - panStartX.value);
+          const dy = Math.abs(e.allTouches[0].y - panStartY.value);
+          if (dy > 12 && dy > dx) {
+            state.activate();
+          } else if (dx > 12 && dx >= dy) {
+            state.fail();
+          }
+        })
         .onStart(() => {
           savedTranslateX.value = translateX.value;
           savedTranslateY.value = translateY.value;
@@ -177,17 +247,20 @@ function ZoomableImage({
   // ── Compose gestures ──
   // Only use tap + double-tap when zoom is enabled
   const tapComposed = useMemo(() => {
-    const taps = [singleTapGesture];
-    if (enableZoom) taps.push(doubleTapGesture);
-    return Gesture.Race(...taps);
+    if (!enableZoom) return singleTapGesture;
+    // Exclusive defers the single-tap until the double-tap has had its chance to
+    // recognize two taps, so double-tap-to-zoom actually fires (Fix 1).
+    return Gesture.Exclusive(doubleTapGesture, singleTapGesture);
   }, [enableZoom, singleTapGesture, doubleTapGesture]);
 
+  // Pinch, pan, and tap all recognise CONCURRENTLY (MG-01/02/03): a two-finger
+  // pinch scales while a one-finger pan repositions, and double-tap toggles zoom —
+  // none blocks another. Single/double tap stay mutually exclusive so a single
+  // tap waits for the double-tap window.
   const composed = useMemo(() => {
-    if (enableZoom) {
-      return Gesture.Simultaneous(Gesture.Race(tapComposed, panGesture), pinchGesture);
-    }
-    return panGesture;
-  }, [enableZoom, tapComposed, panGesture, pinchGesture]);
+    if (!enableZoom) return panGesture;
+    return Gesture.Simultaneous(pinchGesture, panGesture, tapComposed);
+  }, [enableZoom, pinchGesture, panGesture, tapComposed]);
 
   // ── Animations ──
   const imageAnimatedStyle = useAnimatedStyle(() => {
@@ -214,12 +287,10 @@ function ZoomableImage({
           { width: SCREEN_WIDTH, height: SCREEN_HEIGHT },
         ]}
       >
-        <Animated.Image
-          source={{ uri }}
+        <GalleryImage
+          uri={uri}
           style={[{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }, imageAnimatedStyle]}
-          resizeMode="contain"
           accessibilityLabel="Image"
-          accessibilityRole="image"
           accessibilityHint="Pinch to zoom. Double tap to zoom in and out. Swipe down to close."
         />
       </Animated.View>
@@ -233,11 +304,13 @@ function ZoomableVideo({
   onClose,
   enableZoom,
   enableSwipeToDismiss,
+  onZoomChange,
 }: {
   uri: string;
   onClose?: () => void;
   enableZoom: boolean;
   enableSwipeToDismiss: boolean;
+  onZoomChange?: (zoomed: boolean) => void;
 }) {
   const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = useWindowDimensions();
   const scale = useSharedValue(1);
@@ -248,6 +321,15 @@ function ZoomableVideo({
   const savedTranslateY = useSharedValue(0);
   const dismissY = useSharedValue(0);
   const dismissProgress = useSharedValue(0);
+  const panStartX = useSharedValue(0);
+  const panStartY = useSharedValue(0);
+
+  useAnimatedReaction(
+    () => scale.value > 1,
+    (zoomed, prev) => {
+      if (zoomed !== prev && onZoomChange) runOnJS(onZoomChange)(zoomed);
+    }
+  );
 
   const pinchGesture = useMemo(
     () =>
@@ -352,9 +434,21 @@ function MediaGallery({
   const theme = useTheme();
   const colors = useColors();
   const { width: SCREEN_WIDTH } = useWindowDimensions();
-  const flatListRef = useRef<FlatList>(null);
+  // useAnimatedRef holds the native FlatList ref in a UI-thread-safe shareable,
+  // so it is never frozen/serialized like a plain useRef object would be. It
+  // still works as an ordinary `ref` (its `.current` is populated on the JS
+  // thread) and is the Reanimated-sanctioned home for a native-component ref.
+  const flatListRef = useAnimatedRef<FlatList>();
   const [activeIndex, setActiveIndex] = useState(initialIndex);
+  // Paging is disabled while any item is zoomed, so a pan moves the enlarged
+  // image instead of flipping pages; it re-enables at 1x (MG-01/03 isolation).
+  const [pagingEnabled, setPagingEnabled] = useState(true);
+  const handleZoomChange = useCallback((zoomed: boolean) => {
+    setPagingEnabled(!zoomed);
+  }, []);
 
+  // JS-thread-only refs — these callbacks/config never cross into a worklet,
+  // so a plain useRef is correct here (do NOT convert these to shared values).
   const onViewableItemsChanged = useRef(
     ({ viewableItems }: { viewableItems: ViewToken[] }) => {
       if (viewableItems.length > 0 && viewableItems[0].index != null) {
@@ -365,6 +459,17 @@ function MediaGallery({
 
   const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 50 }).current;
 
+  // Preload image frames into the cache the moment the gallery opens, so the
+  // first (and adjacent) frames paint instantly instead of flashing white/black
+  // while the network decode happens. No-op when expo-image isn't installed.
+  useEffect(() => {
+    if (visible) {
+      preloadImages(
+        items.filter((it) => it.type !== 'video').map((it) => it.uri)
+      );
+    }
+  }, [visible, items]);
+
   const renderItem = useCallback(
     ({ item }: { item: MediaItem }) => {
       if (item.type === 'video') {
@@ -374,6 +479,7 @@ function MediaGallery({
             onClose={onClose}
             enableZoom={enableZoom}
             enableSwipeToDismiss={enableSwipeToDismiss}
+            onZoomChange={handleZoomChange}
           />
         );
       }
@@ -383,10 +489,11 @@ function MediaGallery({
           onClose={onClose}
           enableZoom={enableZoom}
           enableSwipeToDismiss={enableSwipeToDismiss}
+          onZoomChange={handleZoomChange}
         />
       );
     },
-    [onClose, enableZoom, enableSwipeToDismiss]
+    [onClose, enableZoom, enableSwipeToDismiss, handleZoomChange]
   );
 
   if (!visible) return null;
@@ -399,6 +506,11 @@ function MediaGallery({
       onRequestClose={onClose}
       statusBarTranslucent
     >
+      {/* A RN <Modal> is a separate native window — RNGH only dispatches touches
+          under a GestureHandlerRootView, so without this every pinch / double-tap
+          / pan GestureDetector inside is dead (paging still works because it's RN's
+          native scroll, not RNGH). This re-enables the gesture system here. */}
+      <GestureHandlerRootView style={componentStyles(theme).container}>
       <View style={[componentStyles(theme).container, { backgroundColor: colors.background }]}>
         <FlatList
           ref={flatListRef}
@@ -407,6 +519,7 @@ function MediaGallery({
           keyExtractor={(_, i) => String(i)}
           horizontal
           pagingEnabled
+          scrollEnabled={pagingEnabled}
           showsHorizontalScrollIndicator={false}
           initialScrollIndex={initialIndex}
           getItemLayout={(_, index) => ({
@@ -423,6 +536,7 @@ function MediaGallery({
         <Pressable
           style={componentStyles(theme).closeButton}
           onPress={onClose}
+          accessibilityRole="button"
           accessibilityLabel="Close gallery"
           accessibilityHint="Double tap to close"
         >
@@ -442,6 +556,7 @@ function MediaGallery({
           </View>
         )}
       </View>
+      </GestureHandlerRootView>
     </Modal>
   );
 }
