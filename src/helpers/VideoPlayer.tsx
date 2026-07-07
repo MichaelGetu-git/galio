@@ -85,6 +85,12 @@ export function VideoPlayer({ uri, style }: VideoPlayerProps) {
         <RNVideo
           source={{ uri }}
           style={StyleSheet.absoluteFill}
+          // The native video surface (Android SurfaceView / ExoPlayer) will
+          // otherwise capture touches and never release them, permanently
+          // stealing horizontal drags from the parent pager. It needs no touch
+          // input of its own, so make it transparent to touches — all gestures
+          // flow to the pan/pager layer above it.
+          pointerEvents="none"
           paused={paused}
           resizeMode="contain"
           repeat

@@ -356,6 +356,41 @@ function ZoomableVideo({
     () =>
       Gesture.Pan()
         .minPointers(1)
+        // Same arbitration the image item uses: the pan stays MANUAL and only
+        // claims the touch when it's genuinely ours. At 1x a horizontal drag is
+        // explicitly FAILED, so it propagates to the parent horizontal FlatList
+        // and paging past the video works (the previous plain Pan swallowed every
+        // horizontal drag → the pager froze on the video item; a forceful diagonal
+        // swipe even tripped swipe-to-dismiss and exited the gallery).
+        .manualActivation(true)
+        .onTouchesDown((e) => {
+          if (e.allTouches.length > 0) {
+            panStartX.value = e.allTouches[0].x;
+            panStartY.value = e.allTouches[0].y;
+          }
+        })
+        .onTouchesMove((e, state) => {
+          if (e.allTouches.length === 0) return;
+          // Zoomed: pan roams the enlarged video freely.
+          if (scale.value > 1) {
+            state.activate();
+            return;
+          }
+          // 1x + dismiss disabled: yield everything to the FlatList (paging).
+          if (!enableSwipeToDismiss) {
+            state.fail();
+            return;
+          }
+          // 1x: a vertical drag arms swipe-to-dismiss; a horizontal drag fails so
+          // the FlatList pages between items.
+          const dx = Math.abs(e.allTouches[0].x - panStartX.value);
+          const dy = Math.abs(e.allTouches[0].y - panStartY.value);
+          if (dy > 12 && dy > dx) {
+            state.activate();
+          } else if (dx > 12 && dx >= dy) {
+            state.fail();
+          }
+        })
         .onStart(() => {
           savedTranslateX.value = translateX.value;
           savedTranslateY.value = translateY.value;
@@ -392,7 +427,7 @@ function ZoomableVideo({
             }
           }
         }),
-    [scale, savedScale, translateX, translateY, savedTranslateX, savedTranslateY, dismissY, dismissProgress, enableSwipeToDismiss, onClose]
+    [scale, savedScale, translateX, translateY, savedTranslateX, savedTranslateY, panStartX, panStartY, dismissY, dismissProgress, enableSwipeToDismiss, onClose, SCREEN_WIDTH, SCREEN_HEIGHT]
   );
 
   const composed = useMemo(() => {
