@@ -51,16 +51,6 @@ function dismissKeyboard() {
   Keyboard.dismiss();
 }
 
-// TEMP diagnostic probe (remove once drag-to-close is confirmed on device).
-// If NOTHING logs when you drag the handle, the gesture never activates — which
-// means RNGH's native module isn't in the running binary (rebuild with
-// `expo run:android`) or Metro is serving a stale bundle (relaunch with `-c`).
-// If `begin`/`update` DO log but the sheet doesn't move, it's a JS-side bug.
-function bsProbe(stage: string, value: number) {
-  // eslint-disable-next-line no-console
-  console.log(`[BS-DRAG] ${stage} translateY=${value.toFixed(1)}`);
-}
-
 export interface BottomSheetProps {
   visible: boolean;
   snapPoints: (number | string)[];
@@ -257,16 +247,11 @@ function BottomSheet({
       Gesture.Pan()
         // Explicit activation: claim ANY vertical movement immediately and fail
         // to horizontal, so RNGH wins the touch before Android's window/Modal
-        // interceptor or the scroll can. `onBegin` fires the instant a touch
-        // lands (before activation) — a reliable probe that the detector is live.
+        // interceptor or the scroll can.
         .activeOffsetY([-8, 8])
         .failOffsetX([-20, 20])
-        .onBegin(() => {
-          runOnJS(bsProbe)('handle:begin', translateY.value);
-        })
         .onStart(() => {
           contextY.value = translateY.value;
-          runOnJS(bsProbe)('handle:start', translateY.value);
           // Dragging the sheet also dismisses an open keyboard (no-op if closed).
           runOnJS(dismissKeyboard)();
         })
@@ -277,7 +262,6 @@ function BottomSheet({
           );
         })
         .onEnd((event) => {
-          runOnJS(bsProbe)('handle:end', translateY.value);
           snapToPoint(event.velocityY, translateY.value);
         }),
     [contextY, translateY, snapToPoint, closedY]
@@ -298,9 +282,6 @@ function BottomSheet({
         // vertical-vs-horizontal intent deterministically inside the Modal window.
         .activeOffsetY([-12, 12])
         .failOffsetX([-20, 20])
-        .onBegin(() => {
-          runOnJS(bsProbe)('body:begin', translateY.value);
-        })
         .onStart(() => {
           contextY.value = translateY.value;
           isDrivingSheet.value = false;
