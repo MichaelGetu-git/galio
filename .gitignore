@@ -7,3 +7,9 @@ yarn.lock
 test
 dist/
 build/
+# Secrets
+.env
+.env.local
+*.tgz
+android/
+app.json
