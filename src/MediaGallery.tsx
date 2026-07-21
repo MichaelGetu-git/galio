@@ -28,6 +28,32 @@ import {
 
 // Double-tap zoom target (MG-02).
 const DOUBLE_TAP_SCALE = 3;
+
+/**
+ * Validates media items to ensure they have proper URIs
+ * @param items - Array of media items to validate
+ * @returns Filtered array of valid media items
+ */
+function validateMediaItems(items: MediaItem[]): MediaItem[] {
+  return items.filter(item => {
+    if (!item.uri || typeof item.uri !== 'string') {
+      console.warn('MediaGallery: Invalid media item - missing or invalid URI', item);
+      return false;
+    }
+    return true;
+  });
+}
+
+/**
+ * Safely clamps a value between min and max
+ * @param value - The value to clamp
+ * @param min - Minimum value
+ * @param max - Maximum value
+ * @returns Clamped value
+ */
+function clampValue(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(value, max));
+}
 import { useTheme, useColors } from './theme';
 import { registerInterop } from './helpers/interop';
 import { VideoPlayer } from './helpers/VideoPlayer';
@@ -48,7 +74,19 @@ export interface MediaGalleryProps {
   enableZoom?: boolean;
   enableSwipeToDismiss?: boolean;
   className?: string;
+  maxZoomLevel?: number;
 }
+
+// Constants for gesture behavior and validation
+const GESTURE_CONFIG = {
+  MAX_ZOOM: 5,
+  MIN_ZOOM: 1,
+  DOUBLE_TAP_SCALE_DEFAULT: 3,
+  DRAG_SLOP: 12,
+  DISMISS_THRESHOLD: 80,
+  VELOCITY_THRESHOLD: 200,
+  RESET_SCALE_THRESHOLD: 1.2,
+} as const;
 
 // ── Single zoomable image ──
 function ZoomableImage({
@@ -465,16 +503,29 @@ function MediaGallery({
   onClose,
   enableZoom = true,
   enableSwipeToDismiss = true,
+  maxZoomLevel = GESTURE_CONFIG.MAX_ZOOM,
 }: MediaGalleryProps): React.ReactElement | null {
   const theme = useTheme();
-  const colors = useColors();
   const { width: SCREEN_WIDTH } = useWindowDimensions();
+  
+  // Validate items on each render to prevent crashes from bad data
+  const validatedItems = useMemo(
+    () => validateMediaItems(items),
+    [items]
+  );
+
+  // Clamp initialIndex to valid range
+  const safeInitialIndex = useMemo(
+    () => clampValue(initialIndex, 0, Math.max(0, validatedItems.length - 1)),
+    [initialIndex, validatedItems.length]
+  );
+  
   // useAnimatedRef holds the native FlatList ref in a UI-thread-safe shareable,
   // so it is never frozen/serialized like a plain useRef object would be. It
   // still works as an ordinary `ref` (its `.current` is populated on the JS
   // thread) and is the Reanimated-sanctioned home for a native-component ref.
   const flatListRef = useAnimatedRef<FlatList>();
-  const [activeIndex, setActiveIndex] = useState(initialIndex);
+  const [activeIndex, setActiveIndex] = useState(safeInitialIndex);
   // Paging is disabled while any item is zoomed, so a pan moves the enlarged
   // image instead of flipping pages; it re-enables at 1x (MG-01/03 isolation).
   const [pagingEnabled, setPagingEnabled] = useState(true);
@@ -546,49 +597,57 @@ function MediaGallery({
           / pan GestureDetector inside is dead (paging still works because it's RN's
           native scroll, not RNGH). This re-enables the gesture system here. */}
       <GestureHandlerRootView style={componentStyles(theme).container}>
-      <View style={[componentStyles(theme).container, { backgroundColor: colors.background }]}>
-        <FlatList
-          ref={flatListRef}
-          data={items}
-          renderItem={renderItem}
-          keyExtractor={(_, i) => String(i)}
-          horizontal
-          pagingEnabled
-          scrollEnabled={pagingEnabled}
-          showsHorizontalScrollIndicator={false}
-          initialScrollIndex={initialIndex}
-          getItemLayout={(_, index) => ({
-            length: SCREEN_WIDTH,
-            offset: SCREEN_WIDTH * index,
-            index,
-          })}
-          onViewableItemsChanged={onViewableItemsChanged}
-          viewabilityConfig={viewabilityConfig}
-          bounces={false}
-        />
-
-        {/* Close button */}
-        <Pressable
-          style={componentStyles(theme).closeButton}
-          onPress={onClose}
-          accessibilityRole="button"
-          accessibilityLabel="Close gallery"
-          accessibilityHint="Double tap to close"
-        >
-          <Text style={componentStyles(theme).closeText}>✕</Text>
-        </Pressable>
-
-        {/* Page indicator */}
-        {items.length > 1 && (
-          <View
-            style={componentStyles(theme).pageIndicator}
-            accessibilityLabel={`Image ${activeIndex + 1} of ${items.length}`}
-            accessibilityRole="text"
-          >
-            <Text style={componentStyles(theme).pageText}>
-              {activeIndex + 1} / {items.length}
-            </Text>
+      <View style={[componentStyles(theme).container, { backgroundColor: '#000000' }]}>
+        {validatedItems.length === 0 ? (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text style={{ color: '#FFFFFF', fontSize: 16 }}>No media items to display</Text>
           </View>
+        ) : (
+          <>
+            <FlatList
+              ref={flatListRef}
+              data={validatedItems}
+              renderItem={renderItem}
+              keyExtractor={(_, i) => String(i)}
+              horizontal
+              pagingEnabled
+              scrollEnabled={pagingEnabled}
+              showsHorizontalScrollIndicator={false}
+              initialScrollIndex={safeInitialIndex}
+              getItemLayout={(_, index) => ({
+                length: SCREEN_WIDTH,
+                offset: SCREEN_WIDTH * index,
+                index,
+              })}
+              onViewableItemsChanged={onViewableItemsChanged}
+              viewabilityConfig={viewabilityConfig}
+              bounces={false}
+            />
+
+            {/* Close button */}
+            <Pressable
+              style={componentStyles(theme).closeButton}
+              onPress={onClose}
+              accessibilityRole="button"
+              accessibilityLabel="Close gallery"
+              accessibilityHint="Double tap to close"
+            >
+              <Text style={componentStyles(theme).closeText}>✕</Text>
+            </Pressable>
+
+            {/* Page indicator */}
+            {validatedItems.length > 1 && (
+              <View
+                style={componentStyles(theme).pageIndicator}
+                accessibilityLabel={`Image ${activeIndex + 1} of ${validatedItems.length}`}
+                accessibilityRole="text"
+              >
+                <Text style={componentStyles(theme).pageText}>
+                  {activeIndex + 1} / {validatedItems.length}
+                </Text>
+              </View>
+            )}
+          </>
         )}
       </View>
       </GestureHandlerRootView>
@@ -604,7 +663,6 @@ const styles = {
 } as const;
 
 const componentStyles = (theme: ReturnType<typeof useTheme>) => {
-  const colors = theme.colors;
   return StyleSheet.create({
     container: {
       flex: 1,
